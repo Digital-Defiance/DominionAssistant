@@ -54,7 +54,7 @@ export const RecipeSummaryDialog: FC<RecipeSummaryDialogProps> = ({
       aria-labelledby="recipe-summary-dialog-title"
       disableRestoreFocus
     >
-      {section !== null && recipe !== null && section !== undefined && recipe !== undefined && (
+      {section && recipe && (
         <DialogTitle>
           <Box
             sx={{
@@ -78,9 +78,7 @@ export const RecipeSummaryDialog: FC<RecipeSummaryDialogProps> = ({
           </Box>
         </DialogTitle>
       )}
-      <DialogContent>
-        {recipe !== null && recipe !== undefined && <RecipeSummary recipe={recipe} />}
-      </DialogContent>
+      <DialogContent>{recipe && <RecipeSummary recipe={recipe} />}</DialogContent>
       <DialogActions>
         <Button onClick={onClose} ref={closeButtonRef}>
           Close

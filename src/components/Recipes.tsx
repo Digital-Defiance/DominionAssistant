@@ -1084,8 +1084,7 @@ export const Recipes: Record<RecipeSections, RecipeSection> = {
               action: GameLogAction.ADD_NEXT_TURN_DISCARD,
               count: (game: IGame, playerIndex: number) => {
                 // discard down to 3 cards
-                const cardsToDiscard = Math.max(0, game.players[playerIndex].turn.cards - 3);
-                return cardsToDiscard;
+                return Math.max(0, game.players[playerIndex].turn.cards - 3);
               },
             },
           ],

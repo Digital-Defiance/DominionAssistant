@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import AddPlayerNames from '@/components/AddPlayerNames';
 import SelectFirstPlayer from '@/components/SelectFirstPlayer';
 import SetGameOptions from '@/components/SetGameOptions';
@@ -13,29 +13,16 @@ import {
   incrementTurnCountersAndPlayerIndices,
   resetPlayerTurnCounters,
 } from '@/game/dominion-lib';
-import { canUndoAction, undoAction } from '@/game/dominion-lib-undo';
+import { undoAction } from '@/game/dominion-lib-undo';
 import { addLogEntry, applyLogAction, applyPendingGroupedActions } from '@/game/dominion-lib-log';
 import { useAlert } from '@/components/AlertContext';
-import { Location, NavigateFunction } from 'react-router-dom';
 import { IGame } from '@/game/interfaces/game';
 import { deepClone } from '@/game/utils';
 import { EmptyGameState } from '@/game/constants';
 
-interface DominionAssistantProps {
-  route: Location;
-  navigation: NavigateFunction;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DominionAssistant: FC<DominionAssistantProps> = ({ route, navigation }) => {
+const DominionAssistant: FC = () => {
   const { gameState, setGameState } = useGameContext();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [canUndo, setCanUndo] = useState(false);
   const { showAlert } = useAlert();
-
-  useEffect(() => {
-    setCanUndo(canUndoAction(gameState, gameState.log.length - 1));
-  }, [gameState, gameState.log]);
 
   const undoLastAction = () => {
     setGameState((prevGame) => {

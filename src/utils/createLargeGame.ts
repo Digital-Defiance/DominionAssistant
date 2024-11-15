@@ -18,7 +18,7 @@ async function main() {
     })
     .parseSync();
 
-  const endGame = argv.noEnd ? false : true;
+  const endGame = !argv.noEnd;
 
   const storageLocation = './game-storage';
 

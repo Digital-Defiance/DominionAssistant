@@ -138,13 +138,7 @@ export function createMockGameRaw(numPlayers: number, overrides?: Partial<IGameR
     // Merge overrides with baseGameRaw
     Object.keys(overrides).forEach((key) => {
       if (key === 'log' && Array.isArray(overrides.log)) {
-        baseGameRaw.log = overrides.log.map((logEntry) => ({
-          ...logEntry,
-          timestamp:
-            typeof logEntry.timestamp === 'string'
-              ? logEntry.timestamp
-              : new Date(logEntry.timestamp).toISOString(),
-        }));
+        baseGameRaw.log = overrides.log;
       } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (baseGameRaw as any)[key] = (overrides as any)[key];

@@ -21,7 +21,10 @@ export default function AboutScreen() {
           return;
         }
         setMessages(data);
-      } catch (err) {}
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (err) {
+        setMessages(['Failed to fetch messages. Please try again later.']);
+      }
     };
 
     fetchMessages();

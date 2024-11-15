@@ -71,8 +71,7 @@ export function calculateVictoryPoints(player: IPlayer): number {
 /**
  * Calculate the initial game kingdom card supply based on the number of players and options.
  * @param numPlayers - The number of players
- * @param curses - Whether curses are included
- * @param prosperity - Whether Prosperity cards are included
+ * @param options - The game options
  * @returns The initial game supply
  */
 export function calculateInitialSupply(numPlayers: number, options: IGameOptions): IGameSupply {
@@ -127,6 +126,7 @@ export function distributeInitialSupply(game: IGame): IGame {
 /**
  * Create a new player object with default values
  * @param playerName - The name of the player
+ * @param index - The index of the player
  * @returns The new player object
  */
 export function newPlayer(playerName: string, index: number): IPlayer {
@@ -213,6 +213,7 @@ export const NewGameState = (gameStateWithOptions: IGame, gameStart: Date): IGam
  * @param field - The field to update
  * @param subfield - The subfield to update
  * @param increment - The amount to increment the field by
+ * @param victoryTrash - Whether to trash the victory card (does not go back into supply)
  * @returns The updated game state
  */
 export function updatePlayerField<T extends keyof PlayerFieldMap>(
@@ -382,7 +383,8 @@ export function getNextPlayerIndex(prevGame: IGame): number {
 
 /**
  * Gets the index of the next player in the game.
- * @param prevGame
+ * @param currentPlayerIndex - The index of the current player in the game
+ * @param playerCount - The number of players in the game
  * @returns The index of the next player in the game
  */
 export function getNextPlayerIndexByIndex(currentPlayerIndex: number, playerCount: number): number {

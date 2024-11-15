@@ -14,15 +14,12 @@ const StyledContainer = styled(Box)(({ theme }) => ({
 }));
 
 export default function DominionAssistantScreen() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   return (
     <StyledContainer>
       <SuperCapsText className="typography-super-title">
         Unofficial Dominion Assistant
       </SuperCapsText>
-      <DominionAssistant route={location} navigation={navigate} />
+      <DominionAssistant />
     </StyledContainer>
   );
 }

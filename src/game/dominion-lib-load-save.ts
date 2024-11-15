@@ -20,7 +20,7 @@ import { IGameOptions } from '@/game/interfaces/game-options';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 import { IStorageService } from '@/game/interfaces/storage-service';
 import { ILogEntryRaw } from '@/game/interfaces/log-entry-raw';
-import { deepClone } from '@/game/utils';
+import { deepClone, isValidDate, isValidDateString } from '@/game/utils';
 import { gt } from 'semver';
 import { IncompatibleSaveError } from '@/game/errors/incompatible-save';
 import { IRenaissanceFeatures } from '@/game/interfaces/set-features/renaissance';
@@ -57,6 +57,7 @@ export function saveGameData(
  * @param name - The name of the save
  * @param storageService - The storage service to use
  * @param existingId - Optional existing game ID to overwrite
+ * @param saveDate - Optional date to use for the save
  * @returns True if the game was saved successfully, false otherwise
  */
 export function saveGame(
@@ -138,7 +139,7 @@ export function convertGameRawToGame(gameRaw: IGameRaw): IGame {
     }
     return date;
   };
-  const game: IGame = {
+  return {
     ...gameRaw,
     log: gameRaw.log.map((entry) => ({
       ...deepClone<ILogEntryRaw>(entry),
@@ -153,8 +154,7 @@ export function convertGameRawToGame(gameRaw: IGameRaw): IGame {
       renaissance: deepClone<IRenaissanceFeatures>(gameRaw.expansions.renaissance),
       risingSun: deepClone<IRisingSunFeatures>(gameRaw.expansions.risingSun),
     },
-  };
-  return game;
+  } as IGame;
 }
 
 /**
@@ -167,19 +167,16 @@ export function convertGameToGameRaw(game: IGame): IGameRaw {
     ...deepClone<IGame>(game),
     log: game.log.map((logEntry) => ({
       ...deepClone<ILogEntry>(logEntry),
-      timestamp:
-        logEntry.timestamp instanceof Date
-          ? logEntry.timestamp.toISOString()
-          : new Date(logEntry.timestamp).toISOString(), // Ensure timestamp is a Date object
+      timestamp: isValidDate(logEntry.timestamp)
+        ? logEntry.timestamp.toISOString()
+        : new Date(logEntry.timestamp).toISOString(), // Ensure timestamp is a Date object
     })) as ILogEntryRaw[],
     turnStatisticsCache: game.turnStatisticsCache.map((turnStatistics) => ({
       ...deepClone<ITurnStatistics>(turnStatistics),
-      start:
-        turnStatistics.start instanceof Date
-          ? turnStatistics.start.toISOString()
-          : turnStatistics.start,
-      end:
-        turnStatistics.end instanceof Date ? turnStatistics.end.toISOString() : turnStatistics.end,
+      start: isValidDate(turnStatistics.start)
+        ? turnStatistics.start.toISOString()
+        : turnStatistics.start,
+      end: isValidDate(turnStatistics.end) ? turnStatistics.end.toISOString() : turnStatistics.end,
     })),
     expansions: {
       renaissance: deepClone<IRenaissanceFeatures>(game.expansions.renaissance),
@@ -190,7 +187,7 @@ export function convertGameToGameRaw(game: IGame): IGameRaw {
 
 /**
  * Restores the types in a game object by converting string dates to Date objects.
- * @param game - The game object to restore
+ * @param gameRaw - The game object to restore
  * @returns The restored game object with proper types
  * @throws Error if the game object is invalid or contains invalid dates
  */
@@ -362,6 +359,7 @@ export function addToSavedGamesList(
 /**
  * Load a game and add a log entry for the load event.
  * @param gameState - The game state
+ * @param loadTime - The date the game was loaded
  * @returns The updated game state
  */
 export function loadGameAddLog(gameState: IGame, loadTime: Date): IGame {
@@ -400,22 +398,19 @@ export function loadGameAddLog(gameState: IGame, loadTime: Date): IGame {
 export function restoreSavedGameMetadata(
   savedGames: ISavedGameMetadataRaw[]
 ): ISavedGameMetadata[] {
-  const newGames: ISavedGameMetadata[] = savedGames.map(
-    (savedGame: ISavedGameMetadataRaw): ISavedGameMetadata => {
-      if (savedGame && typeof savedGame.savedAt === 'string') {
-        const date = new Date(savedGame.savedAt);
-        if (isNaN(date.getTime())) {
-          throw new Error('Invalid saved game metadata');
-        }
-        return {
-          ...savedGame,
-          savedAt: date,
-        } as ISavedGameMetadata;
+  return savedGames.map((savedGame: ISavedGameMetadataRaw): ISavedGameMetadata => {
+    if (savedGame && isValidDateString(savedGame.savedAt)) {
+      const date = new Date(savedGame.savedAt);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid saved game metadata');
       }
-      throw new Error('Invalid saved game metadata');
+      return {
+        ...savedGame,
+        savedAt: date,
+      } as ISavedGameMetadata;
     }
-  );
-  return newGames;
+    throw new Error('Invalid saved game metadata');
+  }) as ISavedGameMetadata[];
 }
 
 /**

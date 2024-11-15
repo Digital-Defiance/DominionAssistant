@@ -186,7 +186,7 @@ const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjust
                 label={relevantPlayer.name.charAt(0).toUpperCase()}
                 size="small"
                 style={{
-                  backgroundColor: relevantPlayer !== undefined ? relevantPlayer.color : 'gray',
+                  backgroundColor: relevantPlayer.color,
                   color: 'white',
                   marginRight: '8px',
                   fontWeight: isActivePlayer ? 'bold' : 'normal',
