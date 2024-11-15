@@ -28,8 +28,7 @@ export const UtilsScreen: FC = () => {
       ) {
         return prevState;
       }
-      const newGame = rebuildGameTimeHistory(prevState);
-      return newGame;
+      return rebuildGameTimeHistory(prevState);
     });
   };
 

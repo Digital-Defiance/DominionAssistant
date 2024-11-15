@@ -137,6 +137,7 @@ export function fieldSubfieldToGameLogAction<T extends keyof PlayerFieldMap>(
 /**
  * Transform a log entry to a string.
  * @param entry - The log entry
+ * @param useFutureTense - Whether to use future tense for the action
  * @returns The string representation of the log entry
  */
 export function logEntryToString(entry: ILogEntry, useFutureTense = false): string {
@@ -261,9 +262,7 @@ export function getTimeSpanFromLastAction(log: ILogEntry[], eventTime: Date): nu
   }
 
   const lastActionTime = new Date(log[log.length - 1].timestamp);
-  const timeSpan = eventTime.getTime() - lastActionTime.getTime();
-
-  return timeSpan;
+  return eventTime.getTime() - lastActionTime.getTime();
 }
 
 /**
@@ -280,8 +279,7 @@ export function calculateAverageTurnDuration(turnDurations: ITurnDuration[]): nu
     return accumulator + turn.duration;
   }, 0);
 
-  const averageDuration = totalDuration / turnDurations.length;
-  return averageDuration;
+  return totalDuration / turnDurations.length;
 }
 
 /**
@@ -304,8 +302,50 @@ export function calculateAverageTurnDurationForPlayer(
     return accumulator + turn.duration;
   }, 0);
 
-  const averageDuration = totalDuration / playerTurns.length;
-  return averageDuration;
+  return totalDuration / playerTurns.length;
+}
+
+/**
+ * Calculates the total number of actions performed by a specific player.
+ * @param logEntries - The game log entries.
+ * @param startIndex - The index of the first log entry to consider.
+ * @param endTime - The end time up to which the actions are counted.
+ * @returns The total number of actions performed by the player.
+ */
+export function calculatePausedTime(
+  logEntries: ILogEntry[],
+  startIndex: number,
+  endTime: Date
+): number {
+  let totalPausedTime = 0;
+  let lastSaveTime: number | null = null;
+  let pauseStartTime: number | null = null;
+
+  for (let i = startIndex; i < logEntries.length; i++) {
+    const entry = logEntries[i];
+    if (entry.timestamp.getTime() >= endTime.getTime()) {
+      break;
+    }
+
+    if (entry.action === GameLogAction.SAVE_GAME) {
+      lastSaveTime = entry.timestamp.getTime();
+    } else if (entry.action === GameLogAction.LOAD_GAME && lastSaveTime !== null) {
+      totalPausedTime += entry.timestamp.getTime() - lastSaveTime;
+      lastSaveTime = null;
+    } else if (entry.action === GameLogAction.PAUSE) {
+      pauseStartTime = entry.timestamp.getTime();
+    } else if (entry.action === GameLogAction.UNPAUSE && pauseStartTime !== null) {
+      totalPausedTime += entry.timestamp.getTime() - pauseStartTime;
+      pauseStartTime = null;
+    }
+  }
+
+  // Handle case where the end time is during a pause
+  if (pauseStartTime !== null) {
+    totalPausedTime += endTime.getTime() - pauseStartTime;
+  }
+
+  return totalPausedTime;
 }
 
 /**
@@ -322,31 +362,11 @@ export function calculateCurrentTurnDuration(logEntries: ILogEntry[], currentTim
   const currentTurn = logEntries[logEntries.length - 1].turn;
   const turnStartEntry = getTurnStartEntry(logEntries, currentTurn);
 
-  let totalPausedTime = 0;
-  let lastSaveTime: number | null = null;
-  let pauseStartTime: number | null = null;
-
-  for (let i = logEntries.indexOf(turnStartEntry); i < logEntries.length; i++) {
-    const entry = logEntries[i];
-
-    if (entry.action === GameLogAction.SAVE_GAME) {
-      lastSaveTime = entry.timestamp.getTime();
-    } else if (entry.action === GameLogAction.LOAD_GAME && lastSaveTime !== null) {
-      totalPausedTime += entry.timestamp.getTime() - lastSaveTime;
-      lastSaveTime = null;
-    } else if (entry.action === GameLogAction.PAUSE) {
-      pauseStartTime = entry.timestamp.getTime();
-    } else if (entry.action === GameLogAction.UNPAUSE && pauseStartTime !== null) {
-      totalPausedTime += entry.timestamp.getTime() - pauseStartTime;
-      pauseStartTime = null;
-    }
-  }
-
-  // Handle case where the game is currently paused
-  if (pauseStartTime !== null) {
-    totalPausedTime += currentTime.getTime() - pauseStartTime;
-  }
-
+  const totalPausedTime = calculatePausedTime(
+    logEntries,
+    logEntries.indexOf(turnStartEntry),
+    currentTime
+  );
   const currentTurnDuration = currentTime.getTime() - turnStartEntry.timestamp.getTime();
   return currentTurnDuration - totalPausedTime;
 }
@@ -354,6 +374,8 @@ export function calculateCurrentTurnDuration(logEntries: ILogEntry[], currentTim
 /**
  * Calculate the total duration of the game from the start of the game to the current time, subtracting the time between any SAVE_GAME and the immediately following LOAD_GAME within the turn.
  * @param log - The game log entries
+ * @param calculateTurnDurations - A function to calculate turn durations from the log entries
+ * @param calculateCurrentTurnDuration - A function to calculate the duration of the current turn
  * @returns The total duration of the game in milliseconds
  */
 export function calculateGameDuration(
@@ -393,34 +415,7 @@ export function calculateDurationUpToEvent(logEntries: ILogEntry[], eventTime: D
     return 0;
   }
 
-  let totalPausedTime = 0;
-  let lastSaveTime: number | null = null;
-  let pauseStartTime: number | null = null;
-
-  for (let i = 0; i < logEntries.length; i++) {
-    const entry = logEntries[i];
-    if (entry.timestamp.getTime() >= eventTime.getTime()) {
-      break;
-    }
-
-    if (entry.action === GameLogAction.SAVE_GAME) {
-      lastSaveTime = entry.timestamp.getTime();
-    } else if (entry.action === GameLogAction.LOAD_GAME && lastSaveTime !== null) {
-      totalPausedTime += entry.timestamp.getTime() - lastSaveTime;
-      lastSaveTime = null;
-    } else if (entry.action === GameLogAction.PAUSE) {
-      pauseStartTime = entry.timestamp.getTime();
-    } else if (entry.action === GameLogAction.UNPAUSE && pauseStartTime !== null) {
-      totalPausedTime += entry.timestamp.getTime() - pauseStartTime;
-      pauseStartTime = null;
-    }
-  }
-
-  // Handle case where the event time is during a pause
-  if (pauseStartTime !== null) {
-    totalPausedTime += eventTime.getTime() - pauseStartTime;
-  }
-
+  const totalPausedTime = calculatePausedTime(logEntries, 0, eventTime);
   const eventDuration = eventTime.getTime() - startGameTime;
   return Math.max(0, eventDuration - totalPausedTime);
 }
@@ -903,6 +898,7 @@ export function prepareGroupedActionTriggers(
  * Apply a log action to the game.
  * @param game - The current game state
  * @param actionDate - The date of the log action
+ * @param applyLogAction - A function to apply a log action to the game
  * @returns The updated game state
  */
 export function applyPendingGroupedActions(
@@ -944,6 +940,7 @@ export function applyPendingGroupedActions(
 /**
  * Get the signed count for a log entry.
  * @param log - The log entry
+ * @param defaultValue - The default value to use if the count is not provided
  * @returns The signed count for the log entry, negative for removal actions and positive for addition actions.
  */
 export function getSignedCount(log: ILogEntry, defaultValue = 0): number {
@@ -1012,7 +1009,7 @@ export function getGameEndTime(game: IGame): Date {
 
 /**
  * Get the start time of a turn.
- * @param game - The game object
+ * @param logEntries - The log entries
  * @param turn - The turn number
  * @returns The log entry marking the beginning of the turn
  */
@@ -1067,7 +1064,7 @@ export function getTurnEndTime(game: IGame, turn: number): Date {
   // a turn ends with either a NEXT_TURN or END_GAME action
   // a NEXT_TURN will have the next higher turn number than the current turn
   // an END_GAME will have the same turn number as the current turn
-  let nextTurnLog = undefined;
+  let nextTurnLog;
   try {
     nextTurnLog = getTurnStartEntry(game.log, turn + 1);
   } catch {
@@ -1089,6 +1086,7 @@ export function getTurnEndTime(game: IGame, turn: number): Date {
 /**
  * Get the adjustments made during the current turn
  * @param game - The game object
+ * @param turn - The turn number (optional)
  * @returns An array of turn adjustments
  */
 export function getTurnAdjustments(game: IGame, turn?: number): Array<ITurnAdjustment> {
@@ -1185,8 +1183,10 @@ export function getAverageActionsPerTurn(game: IGame): number {
 
 /**
  * Get the next turn number for a given player (when it will be their turn)
- * @param game
- * @param playerIndex
+ * @param game - The game object
+ * @param playerIndex - The index of the player
+ * @param skipCurrentTurn - Whether to skip the current turn
+ * @returns The next turn number for the player
  */
 export function getPlayerNextTurnCount(
   game: IGame,

@@ -1,6 +1,6 @@
 import React, { useRef, ReactElement, ReactNode, useEffect, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { BrowserRouter as Router, useLocation, useNavigate, useRoutes } from 'react-router-dom';
+import { BrowserRouter as Router, useLocation, useRoutes } from 'react-router-dom';
 import AboutScreen from '@/components/screens/AboutScreen';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
@@ -89,7 +89,7 @@ function AppRoutes() {
     });
   }
 
-  const routes = useRoutes([
+  return useRoutes([
     {
       path: '/',
       element: <TabView ref={tabViewRef} tabs={tabs} />,
@@ -100,8 +100,6 @@ function AppRoutes() {
       })),
     },
   ]);
-
-  return routes;
 }
 
 export function App() {
