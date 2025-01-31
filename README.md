@@ -47,19 +47,20 @@ Our application, as a fan-built tool that does not replicate the game, could be 
 - **Expansion Support**: Compatibility with various Dominion expansions and game mats
 - **Save/Load Games**: Ability to save game progress and resume later
 - **Intuitive UI**: User-friendly interface with Material-UI components
-
-This is an [NX](https://nx.dev/getting-started/intro) project created with [`create-nx-workspace`](https://nx.dev/nx-api/nx/documents/create-nx-workspace).
-
-## Roadmap/Upcoming Features
-
 - Confirm end game with dialog
 - Game timer visible
 - Auto-save after each event
 - Graph of victory points over time
 - Track turn card gains
 - +card tracking (optional/enable-able)
-- Council-Room button?
-- Implement pause/unpause game enhancement: may be covered by save/load?
+- Council-Room and other card action buttons
+- Pause/unpause game
+
+This is an [NX](https://nx.dev/getting-started/intro) project created with [`create-nx-workspace`](https://nx.dev/nx-api/nx/documents/create-nx-workspace).
+
+## Roadmap/Upcoming Features
+
+- No features are planned at this time. Please suggest one.
 
 ## Getting Started
 
