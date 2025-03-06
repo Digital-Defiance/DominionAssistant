@@ -13,6 +13,8 @@ Welcome to the **Unofficial Dominion Assistant**, a React application designed t
 Unofficial Dominion Assistant is a free tool which aimed to support the main features of the game and the ones we used personally. Many of the specfific expansions and cards are not specifically supported but should allow for manual adjustment to accommodate them.
 Please see our GitHub [issues](https://github.com/Digital-Defiance/DominionAssistant/issues) page for our roadmap/upcoming features and to make requests.
 
+See also: [**Unofficial Star Realms Assistant**](https://github.com/Digital-Defiance/StarRealmsAssistant) which is based on the same code.
+
 ## Disclaimer for End Users
 
 This software runs entirely in the browser and should not affect the local machine, but game state may not be accurately tracked and may affect the outcome of games. This tool should not (yet?) be relied upon for tournaments or anything where it is not being used for personal use. The project is provided "as-is" without any warranties or guarantees. Use at your own risk. The authors are not responsible for any damage or data loss that may occur from using this software.
