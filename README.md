@@ -6,6 +6,9 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6875e251bae24f99bab9d7b53ad8d2eb)](https://app.codacy.com/gh/Digital-Defiance/DominionAssistant/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
+![image](https://github.com/user-attachments/assets/293465bf-3a64-4df9-aa3a-d7465a8e4486)
+Live on [DominionAssistant.com](https://dominionassistant.com)
+
 # Unofficial Dominion Assistant
 
 Welcome to the **Unofficial Dominion Assistant**, a React application designed to enhance your gameplay experience for the popular card game, Dominion! This tool provides comprehensive features for game management, scoring, and player interaction, allowing Dominion enthusiasts to focus on strategy and enjoyment.
