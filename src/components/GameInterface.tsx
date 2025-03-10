@@ -45,6 +45,7 @@ import { RecipeKey, Recipes, RecipeSections } from '@/components/Recipes';
 import { IGroupedAction } from '@/game/interfaces/grouped-action';
 import { RecipeSummaryDialog } from '@/components/RecipeSummaryDialog';
 import { useAlert } from '@/components/AlertContext';
+import { PlayerBar } from './PlayerBar';
 
 interface GameInterfaceProps {
   nextTurn: () => void;
@@ -226,9 +227,10 @@ const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastActi
           paddingBottom: '70px', // fab icons height
         }}
       >
-        <Scoreboard />
+        <PlayerBar />
         <Tabs value={tabValue} onChange={handleTabChange} sx={{ mt: 2 }}>
           <Tab label="Player" />
+          <Tab label="Scoreboard" />
           <Tab label="Adjustments" />
           <Tab label="Supply" />
           <Tab label="Common Actions" />
@@ -245,9 +247,10 @@ const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastActi
           }}
         >
           {tabValue === 0 && <Player containerHeight={containerHeight} />}
-          {tabValue === 1 && <TurnAdjustmentsSummary containerHeight={containerHeight} />}
-          {tabValue === 2 && <SupplyCounts containerHeight={containerHeight} />}
-          {tabValue === 3 && (
+          {tabValue === 1 && <Scoreboard />}
+          {tabValue === 2 && <TurnAdjustmentsSummary containerHeight={containerHeight} />}
+          {tabValue === 3 && <SupplyCounts containerHeight={containerHeight} />}
+          {tabValue === 4 && (
             <RecipesList
               containerHeight={containerHeight}
               containerWidth={containerWidth}

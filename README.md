@@ -217,6 +217,18 @@ Join our community of developers.
 
 ## Changelog
 
+### Sun Mar 10 04:39:00 2025
+
+- Version 0.14.0
+  - New Player Bar at the top, move scoreboard to tab
+
+### Sun Mar 10 02:00:00 2025
+
+- Version 0.13.0
+  - Backport UI fixes from Star Realms
+    - Add player improvements
+    - Set player order improvements
+
 ### Thu Nov 14 20:03:00 2024
 
 - Version 0.12.7

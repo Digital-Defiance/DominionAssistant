@@ -48,6 +48,9 @@ const GameClock = () => {
       }}
     >
       <Typography sx={{ fontFamily: 'CharlemagneStdBold', fontSize: '1rem', color: 'white' }}>
+        Turn: {gameState.currentTurn}
+      </Typography>
+      <Typography sx={{ fontFamily: 'CharlemagneStdBold', fontSize: '1rem', color: 'white' }}>
         Game Time: {formatTimeSpan(gameTime)}
       </Typography>
       <Typography sx={{ fontFamily: 'CharlemagneStdBold', fontSize: '1rem', color: 'white' }}>

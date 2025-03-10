@@ -17,7 +17,7 @@ import { calculateInitialSunTokens } from '@/game/interfaces/set-mats/prophecy';
 /**
  * The current game version
  */
-export const VERSION_NUMBER = '0.13.0';
+export const VERSION_NUMBER = '0.14.0';
 /**
  * The lowest version of the game that is compatible with this version of the save game format.
  */
