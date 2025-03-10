@@ -11,11 +11,13 @@ import {
   Button,
   Typography,
   Tooltip,
+  Avatar,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import SuperCapsText from '@/components/SuperCapsText';
-import { calculateVictoryPoints } from '@/game/dominion-lib';
+import { calculateVictoryPoints, getPlayerLabel } from '@/game/dominion-lib';
 import { useGameContext } from '@/components/GameContext';
+import { PlayerChip } from './PlayerChip';
 
 const TableText = styled(Typography)(() => ({
   fontFamily: 'TrajanProBold',
@@ -72,14 +74,15 @@ const Scoreboard: FC = () => {
                         : ''
                     }
                   >
-                    <Chip
-                      label={player.name.charAt(0).toUpperCase()}
+                    <PlayerChip
+                      label={getPlayerLabel(gameState.players, index)}
                       size="small"
                       style={{
                         backgroundColor: player.color,
                         color: 'white',
                         fontWeight: index === gameState.currentPlayerIndex ? 'bold' : 'normal',
                         border: index === gameState.currentPlayerIndex ? '2px solid #000' : 'none',
+                        minWidth: '30px',
                       }}
                     />
                   </Tooltip>

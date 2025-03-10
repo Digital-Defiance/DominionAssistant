@@ -1,12 +1,13 @@
 import React, { FC } from 'react';
 import { useGameContext } from './GameContext';
-import { Box, Chip, Paper, Typography, Tooltip } from '@mui/material';
+import { Box, Paper, Typography, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import { calculateVictoryPoints } from '@/game/dominion-lib';
+import { calculateVictoryPoints, getPlayerLabel } from '@/game/dominion-lib';
 import { addLogEntry } from '@/game/dominion-lib-log';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
 import { IGame } from '@/game/interfaces/game';
 import { deepClone } from '@/game/utils';
+import { PlayerChip } from './PlayerChip';
 
 const ScoreText = styled(Typography)(() => ({
   fontFamily: 'Minion Pro Bold Caption',
@@ -86,8 +87,8 @@ export const PlayerBar: FC = () => {
             <Tooltip
               title={`${player.name}${index === gameState.currentPlayerIndex ? ' (Current Player)' : ''}`}
             >
-              <Chip
-                label={player.name.charAt(0).toUpperCase()}
+              <PlayerChip
+                label={getPlayerLabel(gameState.players, index)}
                 size="medium"
                 style={{
                   backgroundColor: player.color,
@@ -96,6 +97,7 @@ export const PlayerBar: FC = () => {
                   border: index === gameState.currentPlayerIndex ? '2px solid #000' : 'none',
                   width: '36px',
                   height: '36px',
+                  minWidth: '36px',
                 }}
               />
             </Tooltip>

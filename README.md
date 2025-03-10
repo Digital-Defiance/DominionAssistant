@@ -217,6 +217,11 @@ Join our community of developers.
 
 ## Changelog
 
+### Sun Mar 10 05:17:00 2025
+
+- Version 0.14.1
+  - Fix ellipsis in player bar
+
 ### Sun Mar 10 04:39:00 2025
 
 - Version 0.14.0
