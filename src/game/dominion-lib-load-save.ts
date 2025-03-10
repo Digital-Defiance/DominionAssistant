@@ -8,7 +8,7 @@ import { GameLogAction } from '@/game/enumerations/game-log-action';
 import { InvalidLogSaveGameError } from '@/game/errors/invalid-log-save-game';
 import {
   DefaultGameOptions,
-  LAST_COMPATIBLE_SAVE_VERSION,
+  MINIMUM_COMPATIBLE_SAVE_VERSION,
   NO_PLAYER,
   SaveGameStorageKey,
   SaveGameStorageKeyPrefix,
@@ -199,11 +199,11 @@ export function restoreSavedGame(gameRaw: IGameRaw): IGame {
   if (
     gameRaw.gameVersion === undefined ||
     gameRaw.gameVersion.length === 0 ||
-    gt(LAST_COMPATIBLE_SAVE_VERSION, gameRaw.gameVersion)
+    gt(MINIMUM_COMPATIBLE_SAVE_VERSION, gameRaw.gameVersion)
   ) {
     throw new IncompatibleSaveError(
       gameRaw.gameVersion ?? 'undefined',
-      LAST_COMPATIBLE_SAVE_VERSION
+      MINIMUM_COMPATIBLE_SAVE_VERSION
     );
   }
 
@@ -518,7 +518,6 @@ export function isValidGame(game: unknown): game is IGame {
     g.log.every(isValidLogEntry) &&
     typeof g.currentTurn === 'number' &&
     typeof g.currentPlayerIndex === 'number' &&
-    typeof g.firstPlayerIndex === 'number' &&
     typeof g.selectedPlayerIndex === 'number' &&
     typeof g.currentStep === 'number' &&
     typeof g.setsRequired === 'number'

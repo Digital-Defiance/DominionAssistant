@@ -2,14 +2,13 @@ import React, { FC, useCallback, useEffect } from 'react';
 import {
   Button,
   List,
-  ListItemIcon,
   ListItemText,
   ListItemButton,
   Box,
   Tooltip,
   IconButton,
+  Typography,
 } from '@mui/material';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import { useGameContext } from '@/components/GameContext';
 import theme from '@/components/theme';
@@ -18,13 +17,21 @@ import TabTitle from '@/components/TabTitle';
 import SuperCapsText from '@/components/SuperCapsText';
 import { IGame } from '@/game/interfaces/game';
 import { deepClone } from '@/game/utils';
+import { IPlayer } from '@/game/interfaces/player';
+import { shuffleArray } from '@/game/dominion-lib';
 
-interface SelectFirstPlayerProps {
+interface SetPlayerOrderProps {
   nextStep: () => void;
 }
 
-const SelectFirstPlayer: FC<SelectFirstPlayerProps> = ({ nextStep }) => {
+interface PlayerMapping {
+  player: IPlayer;
+  originalIndex: number;
+}
+
+const SetPlayerOrder: FC<SetPlayerOrderProps> = ({ nextStep }) => {
   const { gameState, setGameState } = useGameContext();
+  const [shuffleChanged, setShuffleChanged] = React.useState<boolean | undefined>(undefined);
 
   const selectRandomFirstPlayer = useCallback(() => {
     if (gameState.players.length > 0) {
@@ -32,12 +39,33 @@ const SelectFirstPlayer: FC<SelectFirstPlayerProps> = ({ nextStep }) => {
       setGameState((prevState: IGame) => {
         const newGame = deepClone<IGame>(prevState);
         newGame.currentPlayerIndex = randomIndex;
-        newGame.firstPlayerIndex = randomIndex;
         newGame.selectedPlayerIndex = randomIndex;
         return newGame;
       });
     }
   }, [gameState.players.length, setGameState]);
+
+  const shufflePlayers = useCallback(() => {
+    setShuffleChanged(false);
+    setGameState((prevState: IGame) => {
+      const newGame = deepClone<IGame>(prevState);
+
+      // Create a mapping structure to track original indices
+      const playerMappings: PlayerMapping[] = newGame.players.map((player, index) => ({
+        player: deepClone(player),
+        originalIndex: index,
+      }));
+
+      const { shuffled, changed } = shuffleArray(playerMappings);
+      setShuffleChanged(changed);
+      newGame.players = shuffled.map((mapping) => mapping.player);
+
+      newGame.currentPlayerIndex = 0;
+      newGame.selectedPlayerIndex = 0;
+
+      return newGame;
+    });
+  }, [setGameState]);
 
   useEffect(() => {
     selectRandomFirstPlayer();
@@ -45,28 +73,22 @@ const SelectFirstPlayer: FC<SelectFirstPlayerProps> = ({ nextStep }) => {
 
   return (
     <CenteredContainer>
-      <TabTitle>Select First Player</TabTitle>
+      <TabTitle>Set Player Order</TabTitle>
       <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
-        <List>
+        <List sx={{ width: '100%' }}>
           {gameState.players.map((player, index) => (
             <ListItemButton
-              key={player.name}
+              key={`player-${index}`}
               selected={gameState.selectedPlayerIndex === index}
               onClick={() => {
                 setGameState((prevState: IGame) => {
                   const newGame = deepClone<IGame>(prevState);
                   newGame.selectedPlayerIndex = index;
                   newGame.currentPlayerIndex = index;
-                  newGame.firstPlayerIndex = index;
                   return newGame;
                 });
               }}
             >
-              <ListItemIcon>
-                {gameState.selectedPlayerIndex === index && (
-                  <ArrowRightIcon style={{ color: theme.palette.secondary.main }} />
-                )}
-              </ListItemIcon>
               <ListItemText
                 primary={
                   <Box display="flex" alignItems="center">
@@ -79,6 +101,15 @@ const SelectFirstPlayer: FC<SelectFirstPlayerProps> = ({ nextStep }) => {
                         marginRight: 1,
                       }}
                     />
+                    <Typography
+                      component="span"
+                      sx={{
+                        fontFamily: 'TrajanProBold',
+                        marginRight: 1,
+                      }}
+                    >
+                      {`${index + 1}.`}
+                    </Typography>
                     <SuperCapsText className="typography-title">{player.name}</SuperCapsText>
                   </Box>
                 }
@@ -86,13 +117,23 @@ const SelectFirstPlayer: FC<SelectFirstPlayerProps> = ({ nextStep }) => {
             </ListItemButton>
           ))}
         </List>
-        <Tooltip title="Select Random First Player">
-          <IconButton onClick={selectRandomFirstPlayer} color="primary">
-            <ShuffleIcon />
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ ml: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Tooltip title="Shuffle Player Order">
+            <IconButton onClick={shufflePlayers} color="secondary">
+              <ShuffleIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
+      {shuffleChanged === false && (
+        <Box sx={{ mt: 2, p: 1, bgcolor: 'info.light', borderRadius: 1 }}>
+          <Typography align="center" variant="body2">
+            Players were shuffled but the order remained the same.
+          </Typography>
+        </Box>
+      )}
       <Button
+        fullWidth
         variant="contained"
         style={{
           backgroundColor: theme.palette.secondary.main,
@@ -100,6 +141,7 @@ const SelectFirstPlayer: FC<SelectFirstPlayerProps> = ({ nextStep }) => {
         }}
         onClick={nextStep}
         disabled={gameState.selectedPlayerIndex === null}
+        sx={{ mt: 2 }}
       >
         Next
       </Button>
@@ -107,4 +149,4 @@ const SelectFirstPlayer: FC<SelectFirstPlayerProps> = ({ nextStep }) => {
   );
 };
 
-export default SelectFirstPlayer;
+export default SetPlayerOrder;

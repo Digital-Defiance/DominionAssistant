@@ -2,8 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Link, Paper, List, ListItem, ListItemText } from '@mui/material';
 import DominionTransparentLogo from '@/assets/images/Dominion-tx.png';
 import SuperCapsText from '@/components/SuperCapsText';
-import { VERSION_NUMBER } from '@/game/constants';
-import CenteredContainer from '../CenteredContainer';
+import {
+  APP_TITLE,
+  APP_TAGLINE,
+  APP_MINI_DISCLAIMER,
+  APP_MINI_DISCLAIMER_NOTE,
+  APP_FEATURES,
+  VERSION_NUMBER,
+} from '@/game/constants';
+import CenteredContainer from '@/components/CenteredContainer';
 
 export default function AboutScreen() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -21,8 +28,7 @@ export default function AboutScreen() {
           return;
         }
         setMessages(data);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (err) {
+      } catch {
         setMessages(['Failed to fetch messages. Please try again later.']);
       }
     };
@@ -82,11 +88,10 @@ export default function AboutScreen() {
                 variant="h4"
                 sx={{ fontFamily: 'CharlemagneStdBold', textAlign: 'center', mb: 2 }}
               >
-                Unofficial Dominion Assistant
+                {APP_TITLE}
               </Typography>
               <Typography variant="body1" component="p" align="center">
-                This React application enhances your Dominion gameplay experience with comprehensive
-                features for game management, scoring, and player interaction.
+                {APP_TAGLINE}
               </Typography>
             </Paper>
           </Box>
@@ -113,18 +118,7 @@ export default function AboutScreen() {
               <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
                 <SuperCapsText className={`typography-title`}>Features</SuperCapsText>
                 <List dense>
-                  {[
-                    'Player Management: Add, remove, and track multiple players',
-                    'Dynamic Scoring: Real-time calculation and leaderboard',
-                    'Game Setup Wizard: Customizable game modes and expansions',
-                    'Turn Tracking: Keep track of player turns and phases',
-                    'Detailed Game Log: Record and review game events',
-                    'Expansion Support: Compatible with various Dominion expansions',
-                    'Save/Load Games: Save progress and resume later',
-                    'Intuitive UI: User-friendly Material-UI components',
-                    'Victory point graphing/statistics',
-                    'Most-recent move is auto-saved to local storage',
-                  ].map((feature, index) => (
+                  {APP_FEATURES.map((feature, index) => (
                     <ListItem key={index}>
                       <ListItemText primary={feature} />
                     </ListItem>
@@ -155,11 +149,7 @@ export default function AboutScreen() {
                   >
                     Jessica Mulein
                   </Link>
-                  . Unofficial Dominion Assistant is an open-source project and not affiliated with
-                  or endorsed by the makers of Dominion or Donald X Vaccarino. It is offered free of
-                  charge and is provided as-is, and with limited support. Please consider supporting
-                  Digital Defiance to promote open source and help us to serve the open source
-                  community.
+                  . {APP_MINI_DISCLAIMER}
                 </Typography>
                 <Typography variant="body1" component="p">
                   For more information, contributions, or to report{' '}
@@ -181,7 +171,7 @@ export default function AboutScreen() {
                   .
                 </Typography>
                 <Typography variant="body1" component="p">
-                  Please note that this tool requires the physical game of Dominion to play.
+                  {APP_MINI_DISCLAIMER_NOTE}
                 </Typography>
                 <Typography variant="body1" component="p">
                   See our{' '}

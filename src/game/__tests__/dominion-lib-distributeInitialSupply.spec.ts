@@ -34,7 +34,6 @@ describe('distributeInitialSupply', () => {
       },
       currentTurn: 1,
       currentPlayerIndex: 0,
-      firstPlayerIndex: 0,
       selectedPlayerIndex: 0,
       log: [],
       turnStatisticsCache: [],

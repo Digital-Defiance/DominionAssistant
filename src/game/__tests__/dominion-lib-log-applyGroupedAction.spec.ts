@@ -57,7 +57,6 @@ describe('applyGroupedAction', () => {
     mockGame = createMockGame(4, {
       currentPlayerIndex: 0,
       selectedPlayerIndex: 0,
-      firstPlayerIndex: 0,
       log: [
         {
           id: faker.string.uuid(),

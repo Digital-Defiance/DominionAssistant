@@ -14,7 +14,7 @@ Live on [DominionAssistant.com](https://dominionassistant.com)
 Welcome to the **Unofficial Dominion Assistant**, a React application designed to enhance your gameplay experience for the popular card game, Dominion! This tool provides comprehensive features for game management, scoring, and player interaction, allowing Dominion enthusiasts to focus on strategy and enjoyment.
 
 Unofficial Dominion Assistant is a free tool which aimed to support the main features of the game and the ones we used personally. Many of the specfific expansions and cards are not specifically supported but should allow for manual adjustment to accommodate them.
-Please see our GitHub [issues](https://github.com/Digital-Defiance/DominionAssistant/issues) page for our roadmap/upcoming features and to make requests.
+Please see our GitHub [issues](https://github.com/Digital-Defiance/DominionAssistant/issues) page for our roadmap/upcoming features and to make requests. Also see the [backlog](https://github.com/orgs/Digital-Defiance/projects/15).
 
 See also: [**Unofficial Star Realms Assistant**](https://github.com/Digital-Defiance/StarRealmsAssistant) which is based on the same code.
 

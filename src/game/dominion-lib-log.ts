@@ -564,7 +564,6 @@ export function applyLogAction(game: IGame, logEntry: ILogEntry): IGame {
 
   if (logEntry.action === GameLogAction.START_GAME) {
     // set first player to the player who started the game
-    updatedGame.firstPlayerIndex = logEntry.playerIndex;
     updatedGame.selectedPlayerIndex = logEntry.playerIndex;
     updatedGame.currentStep = CurrentStep.Game;
     updatedGame.currentTurn = 1;

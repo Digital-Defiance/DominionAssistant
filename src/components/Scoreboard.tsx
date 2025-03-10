@@ -55,10 +55,6 @@ const Scoreboard: FC = () => {
     });
   };
 
-  const getCurrentPlayerIndex = () => {
-    return (gameState.firstPlayerIndex + gameState.currentTurn - 1) % gameState.players.length;
-  };
-
   const isGamePaused = (): boolean => {
     const lastLogEntry = gameState.log.length > 0 ? gameState.log[gameState.log.length - 1] : null;
     return lastLogEntry !== null && lastLogEntry.action === GameLogAction.PAUSE;
@@ -66,7 +62,7 @@ const Scoreboard: FC = () => {
 
   return (
     <Paper elevation={3} sx={{ padding: 0, maxWidth: 600 }}>
-      <TableContainer>
+      <TableContainer className="scoreboard">
         <Table>
           <TableHead>
             <TableRow>
@@ -99,7 +95,7 @@ const Scoreboard: FC = () => {
                 <TableCell>
                   <Tooltip
                     title={
-                      index === getCurrentPlayerIndex()
+                      index === gameState.currentPlayerIndex
                         ? `${player.name} is the current player`
                         : ''
                     }
@@ -110,8 +106,8 @@ const Scoreboard: FC = () => {
                       style={{
                         backgroundColor: player.color,
                         color: 'white',
-                        fontWeight: index === getCurrentPlayerIndex() ? 'bold' : 'normal',
-                        border: index === getCurrentPlayerIndex() ? '2px solid #000' : 'none',
+                        fontWeight: index === gameState.currentPlayerIndex ? 'bold' : 'normal',
+                        border: index === gameState.currentPlayerIndex ? '2px solid #000' : 'none',
                       }}
                     />
                   </Tooltip>

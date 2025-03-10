@@ -3,7 +3,7 @@ import { IGameRaw } from '@/game/interfaces/game-raw';
 import { ILogEntryRaw } from '@/game/interfaces/log-entry-raw';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
 import { createMockGameRaw } from '@/__fixtures__/dominion-lib-fixtures';
-import { LAST_COMPATIBLE_SAVE_VERSION, NO_PLAYER } from '@/game/constants';
+import { MINIMUM_COMPATIBLE_SAVE_VERSION, NO_PLAYER } from '@/game/constants';
 import { faker } from '@faker-js/faker';
 import { EmptyLogError } from '@/game/errors/empty-log';
 import { IncompatibleSaveError } from '@/game/errors/incompatible-save';
@@ -103,7 +103,7 @@ describe('restoreSavedGame', () => {
   it('should not throw an error if the game version is compatible', () => {
     const game = {
       ...validGameRaw,
-      gameVersion: LAST_COMPATIBLE_SAVE_VERSION,
+      gameVersion: MINIMUM_COMPATIBLE_SAVE_VERSION,
     };
 
     expect(() => restoreSavedGame(game)).not.toThrow();

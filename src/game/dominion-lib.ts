@@ -129,10 +129,10 @@ export function distributeInitialSupply(game: IGame): IGame {
  * @param index - The index of the player
  * @returns The new player object
  */
-export function newPlayer(playerName: string, index: number): IPlayer {
+export function newPlayer(playerName: string, index: number, color: string): IPlayer {
   const newPlayer: IPlayer = {
     name: playerName.trim(),
-    color: DefaultPlayerColors[index],
+    color,
     mats: EmptyMatDetails(),
     turn: DefaultTurnDetails(),
     newTurn: DefaultTurnDetails(),
@@ -161,8 +161,7 @@ export const NewGameState = (gameStateWithOptions: IGame, gameStart: Date): IGam
 
   // Create a new game state with the initial supply, while resetting the player details
   newGameState.players = newGameState.players.map((player, index) => ({
-    ...newPlayer(player.name, index),
-    color: newGameState.players[index].color,
+    ...newPlayer(player.name, index, newGameState.players[index].color),
   }));
   newGameState.supply = calculateInitialSupply(
     gameStateWithOptions.players.length,
@@ -175,14 +174,14 @@ export const NewGameState = (gameStateWithOptions: IGame, gameStart: Date): IGam
       id: uuidv4(),
       timestamp: gameStart,
       gameTime: 0,
-      playerIndex: newGameState.firstPlayerIndex,
-      currentPlayerIndex: newGameState.firstPlayerIndex,
+      playerIndex: 0,
+      currentPlayerIndex: 0,
       turn: 1,
       action: GameLogAction.START_GAME,
     } as ILogEntry,
   ];
-  newGameState.selectedPlayerIndex = newGameState.firstPlayerIndex;
-  newGameState.currentPlayerIndex = newGameState.firstPlayerIndex;
+  newGameState.selectedPlayerIndex = 0;
+  newGameState.currentPlayerIndex = 0;
 
   // Distribute initial supply to players
   newGameState = distributeInitialSupply(newGameState);
@@ -467,4 +466,54 @@ export function rankPlayers(
   });
 
   return rankedPlayers;
+}
+
+/**
+ * Returns the next available player color from the appropriate color palette.
+ * @param players An array of players with color properties
+ * @param bossEnabled Whether the boss mode is enabled
+ * @returns The next available color string
+ * @throws Error if there are no more available colors
+ */
+export function getNextAvailablePlayerColor(players: Array<{ color: string }>): string {
+  // Get the set of colors currently in use
+  const usedColors = new Set(
+    players.filter((player) => player.color !== undefined).map((player) => player.color)
+  );
+
+  // Find the first color in the palette that isn't used
+  for (const color of DefaultPlayerColors) {
+    if (!usedColors.has(color)) {
+      return color;
+    }
+  }
+
+  throw new Error('No available colors found.');
+}
+
+// Fisher-Yates shuffle algorithm
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+export function shuffleArray<T extends unknown>(array: T[]): { shuffled: T[]; changed: boolean } {
+  // Create a copy of the original array for comparison
+  const original = [...array];
+
+  // Create another copy for shuffling
+  const shuffled = [...array];
+
+  // Fisher-Yates shuffle algorithm
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  // Compare with the original copy to check if anything changed
+  let changed = false;
+  for (let i = 0; i < shuffled.length; i++) {
+    if (shuffled[i] !== original[i]) {
+      changed = true;
+      break;
+    }
+  }
+
+  return { shuffled, changed };
 }

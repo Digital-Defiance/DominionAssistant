@@ -21,8 +21,6 @@ import { deepClone } from '@/game/utils';
 import { IGameRaw } from '@/game/interfaces/game-raw';
 
 export function createMockGame(playerCount: number, overrides?: Partial<IGame>): IGame {
-  const firstPlayerIndex =
-    overrides?.firstPlayerIndex ?? faker.number.int({ min: 0, max: playerCount - 1 });
   const options: IGameOptions = {
     curses: true,
     expansions: { prosperity: false, renaissance: false, risingSun: false } as IExpansionsEnabled,
@@ -52,16 +50,15 @@ export function createMockGame(playerCount: number, overrides?: Partial<IGame>):
       },
     },
     currentTurn: 1,
-    currentPlayerIndex: firstPlayerIndex,
-    firstPlayerIndex: firstPlayerIndex,
-    selectedPlayerIndex: firstPlayerIndex,
+    currentPlayerIndex: 0,
+    selectedPlayerIndex: 0,
     log: [
       {
         id: faker.string.uuid(),
         timestamp: new Date(),
         gameTime: 0,
-        playerIndex: firstPlayerIndex,
-        currentPlayerIndex: firstPlayerIndex,
+        playerIndex: 0,
+        currentPlayerIndex: 0,
         turn: 1,
         action: GameLogAction.START_GAME,
       },

@@ -3,6 +3,7 @@ import { getNextPlayerIndex, newPlayer, NewGameState } from '@/game/dominion-lib
 import { IGame } from '@/game/interfaces/game';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
 import {
+  DefaultPlayerColors,
   DefaultRenaissanceFeatures,
   DefaultTurnDetails,
   EmptyGameState,
@@ -31,9 +32,11 @@ describe('reconstructGameState', () => {
     baseGame = NewGameState(
       {
         ...EmptyGameState(),
-        players: [newPlayer('Player 1', 0), newPlayer('Player 2', 1)],
+        players: [
+          newPlayer('Player 1', 0, DefaultPlayerColors[0]),
+          newPlayer('Player 2', 1, DefaultPlayerColors[1]),
+        ],
         // start with second player
-        firstPlayerIndex: 1,
         currentPlayerIndex: 1,
         selectedPlayerIndex: 1,
       },
@@ -124,9 +127,33 @@ describe('reconstructGameState', () => {
     };
 
     const result = reconstructGameState(gameWithNextTurn);
-    expect(nextPlayerIndex).toBe(0); // should wrap back to 0
-    expect(result.currentPlayerIndex).toBe(nextPlayerIndex); // should wrap back to 0
+    expect(nextPlayerIndex).toBe(1);
+    expect(result.currentPlayerIndex).toBe(nextPlayerIndex);
     expect(result.currentTurn).toBe(2); // should increment
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+    // add one more turn
+    const nextPlayerIndex2 = getNextPlayerIndex(result);
+    const gameWithNextTurn2 = {
+      ...result,
+      log: [
+        ...result.log,
+        {
+          id: faker.string.uuid(),
+          timestamp: new Date(),
+          action: GameLogAction.NEXT_TURN,
+          playerIndex: nextPlayerIndex2,
+          currentPlayerIndex: result.currentPlayerIndex,
+          turn: 3,
+          playerTurnDetails: [{ ...DefaultTurnDetails }, { ...DefaultTurnDetails }],
+          prevPlayerIndex: result.currentPlayerIndex,
+        } as ILogEntry,
+      ],
+    };
+    const result2 = reconstructGameState(gameWithNextTurn2);
+    expect(nextPlayerIndex2).toBe(0); // should wrap back around
+    expect(result2.currentPlayerIndex).toBe(nextPlayerIndex2);
+    expect(result2.currentTurn).toBe(3); // should increment
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
@@ -428,11 +455,9 @@ describe('reconstructGameState', () => {
     );
     expect(mockGame.currentPlayerIndex).toBe(updatedGame.currentPlayerIndex);
     expect(mockGame.selectedPlayerIndex).toBe(updatedGame.selectedPlayerIndex);
-    expect(mockGame.firstPlayerIndex).toBe(updatedGame.firstPlayerIndex);
     const reconstructedGame = reconstructGameState(updatedGame);
     expect(reconstructedGame.currentPlayerIndex).toBe(updatedGame.currentPlayerIndex);
     expect(reconstructedGame.selectedPlayerIndex).toBe(updatedGame.selectedPlayerIndex);
-    expect(reconstructedGame.firstPlayerIndex).toBe(updatedGame.firstPlayerIndex);
     expect(reconstructedGame).toStrictEqual(updatedGame);
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });

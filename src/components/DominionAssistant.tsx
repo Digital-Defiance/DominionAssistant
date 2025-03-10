@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import AddPlayerNames from '@/components/AddPlayerNames';
-import SelectFirstPlayer from '@/components/SelectFirstPlayer';
+import SelectFirstPlayer from '@/components/SetPlayerOrder';
 import SetGameOptions from '@/components/SetGameOptions';
 import GameInterface from '@/components/GameInterface';
 import EndGame from '@/components/EndGame';

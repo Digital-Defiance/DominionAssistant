@@ -14,8 +14,14 @@ import { IRisingSunFeatures } from '@/game/interfaces/set-features/rising-sun';
 import { IExpansionsEnabled } from '@/game/interfaces/expansions-enabled';
 import { calculateInitialSunTokens } from '@/game/interfaces/set-mats/prophecy';
 
-export const VERSION_NUMBER = '0.12.7';
-export const LAST_COMPATIBLE_SAVE_VERSION = '0.12.0';
+/**
+ * The current game version
+ */
+export const VERSION_NUMBER = '0.13.0';
+/**
+ * The lowest version of the game that is compatible with this version of the save game format.
+ */
+export const MINIMUM_COMPATIBLE_SAVE_VERSION = '0.13.0';
 
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 6;
@@ -330,7 +336,6 @@ export function EmptyGameState(): IGame {
       risingSun: DefaultRisingSunFeatures(),
     },
     currentPlayerIndex: NO_PLAYER,
-    firstPlayerIndex: NO_PLAYER,
     selectedPlayerIndex: NO_PLAYER,
     log: [],
     turnStatisticsCache: [],
@@ -486,3 +491,23 @@ export const DefaultPlayerColors = [
   '#ba68c8',
   '#4db6ac',
 ];
+
+export const APP_TITLE = 'Unofficial Dominion Assistant';
+export const APP_TAGLINE =
+  'This React application enhances your Dominion gameplay experience with comprehensive features for game management, scoring, and player interaction.';
+export const APP_FEATURES = [
+  'Player Management: Add, remove, and track multiple players',
+  'Dynamic Scoring: Real-time calculation and leaderboard',
+  'Game Setup Wizard: Customizable game modes and expansions',
+  'Turn Tracking: Keep track of player turns and phases',
+  'Detailed Game Log: Record and review game events',
+  'Expansion Support: Compatible with various Dominion expansions',
+  'Save/Load Games: Save progress and resume later',
+  'Intuitive UI: User-friendly Material-UI components',
+  'Victory point graphing/statistics',
+  'Most-recent move is auto-saved to local storage',
+];
+export const APP_MINI_DISCLAIMER =
+  'Unofficial Dominion Assistant is an open-source project and not affiliated with or endorsed by the makers of Dominion or Donald X Vaccarino. It is offered free of charge and is provided as-is, and with limited support. Please consider supporting Digital Defiance to promote open source and help us to serve the open source community.';
+export const APP_MINI_DISCLAIMER_NOTE =
+  'Please note that this tool requires the physical game of Dominion to play.';

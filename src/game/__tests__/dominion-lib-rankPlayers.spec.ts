@@ -1,13 +1,14 @@
 import { rankPlayers, newPlayer } from '@/game/dominion-lib';
 import { RankedPlayer } from '@/game/interfaces/ranked-player';
 import { IPlayer } from '@/game/interfaces/player';
+import { DefaultPlayerColors } from '../constants';
 
 describe('rankPlayers', () => {
   it('should rank players correctly with no ties', () => {
     const players: IPlayer[] = [
-      newPlayer('Alice', 0),
-      newPlayer('Bob', 1),
-      newPlayer('Charlie', 2),
+      newPlayer('Alice', 0, DefaultPlayerColors[0]),
+      newPlayer('Bob', 1, DefaultPlayerColors[1]),
+      newPlayer('Charlie', 2, DefaultPlayerColors[2]),
     ];
 
     const calculateVictoryPoints = jest.fn().mockImplementation((player) => {
@@ -34,10 +35,10 @@ describe('rankPlayers', () => {
 
   it('should rank players correctly with ties', () => {
     const players: IPlayer[] = [
-      newPlayer('Alice', 0),
-      newPlayer('Bob', 1),
-      newPlayer('Charlie', 2),
-      newPlayer('David', 3),
+      newPlayer('Alice', 0, DefaultPlayerColors[0]),
+      newPlayer('Bob', 1, DefaultPlayerColors[1]),
+      newPlayer('Charlie', 2, DefaultPlayerColors[2]),
+      newPlayer('David', 3, DefaultPlayerColors[3]),
     ];
 
     const calculateVictoryPoints = jest.fn().mockImplementation((player) => {
@@ -67,10 +68,10 @@ describe('rankPlayers', () => {
 
   it('should rank players correctly with ties and name sorting', () => {
     const players: IPlayer[] = [
-      newPlayer('Alice', 0),
-      newPlayer('Bob', 1),
-      newPlayer('Charlie', 2),
-      newPlayer('David', 3),
+      newPlayer('Alice', 0, DefaultPlayerColors[0]),
+      newPlayer('Bob', 1, DefaultPlayerColors[1]),
+      newPlayer('Charlie', 2, DefaultPlayerColors[2]),
+      newPlayer('David', 3, DefaultPlayerColors[3]),
     ];
 
     const calculateVictoryPoints = jest.fn().mockImplementation((player) => {
@@ -109,7 +110,7 @@ describe('rankPlayers', () => {
   });
 
   it('should handle a single player', () => {
-    const players: IPlayer[] = [newPlayer('Alice', 0)];
+    const players: IPlayer[] = [newPlayer('Alice', 0, DefaultPlayerColors[0])];
 
     const calculateVictoryPoints = jest.fn().mockReturnValue(10);
 
