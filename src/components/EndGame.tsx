@@ -12,11 +12,12 @@ import {
 } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { IGame } from '@/game/interfaces/game';
-import { calculateVictoryPoints, rankPlayers } from '@/game/dominion-lib';
+import { calculateVictoryPoints, getPlayerLabel, rankPlayers } from '@/game/dominion-lib';
 import TabTitle from '@/components/TabTitle';
 import CenteredContainer from '@/components/CenteredContainer';
 import { RankedPlayer } from '@/game/interfaces/ranked-player';
 import { IPlayer } from '@/game/interfaces/player';
+import { PlayerChip } from './PlayerChip';
 
 interface EndGameProps {
   game: IGame;
@@ -48,13 +49,14 @@ const EndGame: FC<EndGameProps> = ({ game, onNewGame }) => {
                 <TableRow key={player.name}>
                   <TableCell>{rankedPlayer.rank}</TableCell>
                   <TableCell>
-                    <Chip
-                      label={player.name.charAt(0).toUpperCase()}
+                    <PlayerChip
+                      label={getPlayerLabel(game.players, rankedPlayer.index)}
                       size="small"
                       style={{
                         backgroundColor: player.color || 'gray',
                         color: 'white',
                         marginRight: '8px',
+                        minWidth: '30px',
                       }}
                     />
                     {player.name}

@@ -30,6 +30,8 @@ import '@/styles.scss';
 import { Recipes } from './Recipes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/pro-solid-svg-icons';
+import { PlayerChip } from './PlayerChip';
+import { getPlayerLabel } from '@/game/dominion-lib';
 
 interface GameLogEntryProps {
   logIndex: number;
@@ -182,8 +184,8 @@ const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjust
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center">
             {relevantPlayer && (
-              <Chip
-                label={relevantPlayer.name.charAt(0).toUpperCase()}
+              <PlayerChip
+                label={getPlayerLabel(gameState.players, entry.playerIndex)}
                 size="small"
                 style={{
                   backgroundColor: relevantPlayer.color,
@@ -191,6 +193,7 @@ const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjust
                   marginRight: '8px',
                   fontWeight: isActivePlayer ? 'bold' : 'normal',
                   border: isActivePlayer ? '2px solid #000' : 'none',
+                  minWidth: '30px',
                 }}
               />
             )}
