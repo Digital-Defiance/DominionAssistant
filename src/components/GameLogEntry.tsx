@@ -2,7 +2,6 @@ import React, { FC, MouseEvent, useEffect, useState } from 'react';
 import {
   Box,
   Typography,
-  Chip,
   Tooltip,
   IconButton,
   Dialog,
@@ -22,7 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useGameContext } from '@/components/GameContext';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 import { canUndoAction, undoAction } from '@/game/dominion-lib-undo';
-import { formatTimeSpan, logEntryToString } from '@/game/dominion-lib-log';
+import { formatTimeSpan, getSignedCount, logEntryToString } from '@/game/dominion-lib-log';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
 import { AdjustmentActions } from '@/game/constants';
 import ColoredPlayerName from '@/components/ColoredPlayerName';
@@ -31,7 +30,7 @@ import { Recipes } from './Recipes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/pro-solid-svg-icons';
 import { PlayerChip } from './PlayerChip';
-import { getPlayerLabel } from '@/game/dominion-lib';
+import { getFieldAndSubfieldFromAction, getPlayerLabel } from '@/game/dominion-lib';
 
 interface GameLogEntryProps {
   logIndex: number;
@@ -126,6 +125,32 @@ const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjust
     window.dispatchEvent(new HashChangeEvent('hashchange'));
   };
 
+  const turnAdjustmentsForEntry = (): number | null => {
+    if (!AdjustmentActions.includes(entry.action)) {
+      return null;
+    }
+    const { field, subfield } = getFieldAndSubfieldFromAction(entry.action);
+    let count = getSignedCount(entry);
+    let index = logIndex - 1;
+    while (index >= 0 && gameState.log[index].turn === entry.turn) {
+      const prevEntry = gameState.log[index];
+      index--;
+      if (
+        AdjustmentActions.includes(prevEntry.action) &&
+        prevEntry.playerIndex === entry.playerIndex
+      ) {
+        const { field: prevField, subfield: prevSubfield } = getFieldAndSubfieldFromAction(
+          prevEntry.action
+        );
+        if (field !== prevField || subfield !== prevSubfield) {
+          continue;
+        }
+        count += getSignedCount(prevEntry);
+      }
+    }
+    return count;
+  };
+
   const actionText = logEntryToString(entry);
 
   const relevantPlayer = entry.playerIndex > -1 ? gameState.players[entry.playerIndex] : undefined;
@@ -137,6 +162,7 @@ const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjust
     entry.action
   );
   const hasLinkedAction = gameState.log.some((logEntry) => logEntry.linkedActionId === entry.id);
+  const groupedAdjustments = turnAdjustmentsForEntry();
 
   if (entry.playerIndex > -1 && !gameState.players[entry.playerIndex]) {
     console.warn(`Player not found for index ${entry.playerIndex}`, {
@@ -236,6 +262,18 @@ const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjust
               {entry.correction && (
                 <Tooltip title="This entry was a correction" arrow>
                   <EditIcon fontSize="small" style={{ marginLeft: '8px', color: '#ff9800' }} />
+                </Tooltip>
+              )}
+              {groupedAdjustments !== null && (
+                <Tooltip title="Total adjustments this turn on this field and player">
+                  <Typography
+                    variant="caption"
+                    component="span"
+                    style={{ marginLeft: '4px', color: groupedAdjustments >= 0 ? 'green' : 'red' }}
+                  >
+                    {groupedAdjustments > 0 ? '+' : ''}
+                    {groupedAdjustments}
+                  </Typography>
                 </Tooltip>
               )}
             </Box>
