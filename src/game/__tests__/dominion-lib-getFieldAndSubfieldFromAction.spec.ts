@@ -84,16 +84,26 @@ describe('getFieldAndSubfieldFromAction', () => {
     }
   );
 
-  // Test cases for actions that should return null
+  // Test cases for 'prophecy' field
   it.each([
-    GameLogAction.START_GAME,
-    GameLogAction.NEXT_TURN,
-    GameLogAction.ADD_PROPHECY,
-    GameLogAction.REMOVE_PROPHECY,
-  ])('should return null for both field and subfield for %s', (action) => {
-    const result = getFieldAndSubfieldFromAction(action);
-    expect(result).toEqual({ field: null, subfield: null });
-  });
+    [GameLogAction.ADD_PROPHECY, 'prophecy', 'suns'],
+    [GameLogAction.REMOVE_PROPHECY, 'prophecy', 'suns'],
+  ])(
+    'should return correct field and subfield for %s',
+    (action, expectedField, expectedSubfield) => {
+      const result = getFieldAndSubfieldFromAction(action);
+      expect(result).toEqual({ field: expectedField, subfield: expectedSubfield });
+    }
+  );
+
+  // Test cases for actions that should return null
+  it.each([GameLogAction.START_GAME, GameLogAction.NEXT_TURN])(
+    'should return null for both field and subfield for %s',
+    (action) => {
+      const result = getFieldAndSubfieldFromAction(action);
+      expect(result).toEqual({ field: null, subfield: null });
+    }
+  );
 
   // Edge case: testing with an invalid action
   it('should return null for both field and subfield for an invalid action', () => {

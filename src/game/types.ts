@@ -1,5 +1,6 @@
 import { IGameOptions } from '@/game/interfaces/game-options';
 import { IPlayer } from '@/game/interfaces/player';
+import { IProphecyMat } from './interfaces/set-mats/prophecy';
 
 export type TurnField = 'actions' | 'buys' | 'coins' | 'cards' | 'gains' | 'discard';
 export type VictoryField =
@@ -31,6 +32,9 @@ export type OptionField = keyof IGameOptions;
 export type OptionSubField<T extends OptionField> = T extends 'curses'
   ? boolean
   : keyof IGameOptions[T];
+
+export type ProphecyField = 'prophecy';
+export type ProphecySubField = keyof IProphecyMat;
 
 export type NumericKeys<T> = {
   [K in keyof T]: T[K] extends number ? K : never;

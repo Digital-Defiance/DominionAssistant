@@ -27,7 +27,13 @@ import {
   NullSet as ProsperityNullSet,
 } from '@/game/interfaces/set-kingdom/prosperity';
 import { IPlayer } from '@/game/interfaces/player';
-import { PlayerField, PlayerFieldMap, PlayerSubFields } from '@/game/types';
+import {
+  PlayerField,
+  PlayerFieldMap,
+  PlayerSubFields,
+  ProphecyField,
+  ProphecySubField,
+} from '@/game/types';
 import { CurrentStep } from '@/game/enumerations/current-step';
 import { calculateInitialSunTokens } from '@/game/interfaces/set-mats/prophecy';
 import { IGameOptions } from '@/game/interfaces/game-options';
@@ -271,8 +277,8 @@ export function updatePlayerField<T extends keyof PlayerFieldMap>(
  * @returns The field and subfield
  */
 export function getFieldAndSubfieldFromAction(action: GameLogAction): {
-  field: PlayerField | null;
-  subfield: PlayerSubFields | null;
+  field: PlayerField | ProphecyField | null;
+  subfield: PlayerSubFields | ProphecySubField | null;
 } {
   switch (action) {
     case GameLogAction.ADD_ACTIONS:
@@ -341,6 +347,9 @@ export function getFieldAndSubfieldFromAction(action: GameLogAction): {
     case GameLogAction.ADD_NEXT_TURN_DISCARD:
     case GameLogAction.REMOVE_NEXT_TURN_DISCARD:
       return { field: 'newTurn', subfield: 'discard' };
+    case GameLogAction.ADD_PROPHECY:
+    case GameLogAction.REMOVE_PROPHECY:
+      return { field: 'prophecy', subfield: 'suns' };
     default:
       return { field: null, subfield: null };
   }

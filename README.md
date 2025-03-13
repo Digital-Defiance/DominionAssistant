@@ -213,6 +213,12 @@ Join our community of developers.
 
 ## Changelog
 
+### Tue Mar 12 21:41:00 2025
+
+- Version 0.14.2
+  - Added counter in game log indicating amount of adjustment per field per player per turn
+  - Split up turn adjustments by player
+
 ### Sun Mar 10 05:17:00 2025
 
 - Version 0.14.1
