@@ -29,6 +29,7 @@ import '@/styles.scss';
 import { IGame } from '@/game/interfaces/game';
 import { deepClone } from '@/game/utils';
 import { PlayerChip } from './PlayerChip';
+import { ILogEntry } from '@/game/interfaces/log-entry';
 
 const OuterContainer = styled(Box)(({ theme }) => ({
   paddingBottom: theme.spacing(8), // Ensure enough space at the bottom
@@ -127,7 +128,8 @@ const Player: FC<PlayerProps> = ({ containerHeight }) => {
     increment: number,
     linkedActionId?: string,
     victoryTrash?: boolean
-  ): void => {
+  ): ILogEntry | undefined => {
+    let logEntry: ILogEntry | undefined;
     const prevGame = deepClone<IGame>(gameState);
     try {
       const updatedGame = updatePlayerField(
@@ -139,7 +141,7 @@ const Player: FC<PlayerProps> = ({ containerHeight }) => {
         victoryTrash
       );
       const action = fieldSubfieldToGameLogAction(field, subfield, increment);
-      addLogEntry(updatedGame, updatedGame.selectedPlayerIndex, action, {
+      logEntry = addLogEntry(updatedGame, updatedGame.selectedPlayerIndex, action, {
         count: Math.abs(increment),
         correction: isCorrection,
         linkedActionId,
@@ -154,6 +156,7 @@ const Player: FC<PlayerProps> = ({ containerHeight }) => {
       }
       setGameState(prevGame);
     }
+    return logEntry;
   };
 
   const handleCombinedFieldChange = <T extends keyof PlayerFieldMap>(

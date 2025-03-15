@@ -41,6 +41,17 @@ interface GameLogEntryProps {
 const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjustmentsDialog }) => {
   const { gameState, setGameState } = useGameContext();
   const [openUndoDialog, setOpenUndoDialog] = useState(false);
+  const [canUndo, setCanUndo] = useState(false);
+
+  // Check if the action can be undone, but catch and handle any errors
+  useEffect(() => {
+    try {
+      setCanUndo(canUndoAction(gameState, logIndex));
+    } catch (error) {
+      console.error('Error checking if action can be undone:', error);
+      setCanUndo(false);
+    }
+  }, [gameState, logIndex]);
 
   const handleUndoClick = () => {
     setOpenUndoDialog(true);
@@ -292,7 +303,7 @@ const GameLogEntry: FC<GameLogEntryProps> = ({ logIndex, entry, onOpenTurnAdjust
                 <LinkIcon fontSize="small" color="action" />
               </Link>
             )}
-            {canUndoAction(gameState, logIndex) && (
+            {canUndo && (
               <IconButton onClick={handleUndoClick} size="small">
                 <Tooltip title="Undo this entry">
                   <UndoIcon fontSize="small" />
