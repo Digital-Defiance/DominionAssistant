@@ -17,49 +17,49 @@ import { calculateInitialSunTokens } from '@/game/interfaces/set-mats/prophecy';
 /**
  * The current game version
  */
-export const VERSION_NUMBER = '0.14.2';
+export const VERSION_NUMBER = '0.14.3' as const;
 /**
  * The lowest version of the game that is compatible with this version of the save game format.
  */
-export const MINIMUM_COMPATIBLE_SAVE_VERSION = '0.13.0';
+export const MINIMUM_COMPATIBLE_SAVE_VERSION = '0.13.0' as const;
 
-export const MIN_PLAYERS = 2;
-export const MAX_PLAYERS = 6;
-export const NO_PLAYER = -1;
-export const NOT_PRESENT = -1;
+export const MIN_PLAYERS = 2 as const;
+export const MAX_PLAYERS = 6 as const;
+export const NO_PLAYER = -1 as const;
+export const NOT_PRESENT = -1 as const;
 // Base Set
-export const ESTATE_COST = 2;
-export const ESTATE_VP = 1;
-export const DUCHY_COST = 5;
-export const DUCHY_VP = 3;
-export const PROVINCE_COST = 8;
-export const PROVINCE_VP = 6;
-export const CURSE_COST = 0;
-export const CURSE_VP = -1;
-export const COPPER_COST = 0;
-export const COPPER_VALUE = 1;
-export const SILVER_COST = 3;
-export const SILVER_VALUE = 2;
-export const GOLD_COST = 6;
-export const GOLD_VALUE = 3;
-export const HAND_STARTING_ESTATES = 3;
-export const HAND_STARTING_ESTATES_FROM_SUPPLY = false;
-export const HAND_STARTING_COPPERS = 7;
-export const HAND_STARTING_COPPERS_FROM_SUPPLY = true;
+export const ESTATE_COST = 2 as const;
+export const ESTATE_VP = 1 as const;
+export const DUCHY_COST = 5 as const;
+export const DUCHY_VP = 3 as const;
+export const PROVINCE_COST = 8 as const;
+export const PROVINCE_VP = 6 as const;
+export const CURSE_COST = 0 as const;
+export const CURSE_VP = -1 as const;
+export const COPPER_COST = 0 as const;
+export const COPPER_VALUE = 1 as const;
+export const SILVER_COST = 3 as const;
+export const SILVER_VALUE = 2 as const;
+export const GOLD_COST = 6 as const;
+export const GOLD_VALUE = 3 as const;
+export const HAND_STARTING_ESTATES = 3 as const;
+export const HAND_STARTING_ESTATES_FROM_SUPPLY = false as const;
+export const HAND_STARTING_COPPERS = 7 as const;
+export const HAND_STARTING_COPPERS_FROM_SUPPLY = true as const;
 // Prosperity Kingdom
 export const PLATINUM_TOTAL_COUNT = 12;
-export const PLATINUM_COST = 9;
-export const PLATINUM_VALUE = 5;
-export const COLONY_TOTAL_COUNT_2P = 8;
-export const COLONY_TOTAL_COUNT = 12;
-export const COLONY_COST = 11;
-export const COLONY_VP = 10;
+export const PLATINUM_COST = 9 as const;
+export const PLATINUM_VALUE = 5 as const;
+export const COLONY_TOTAL_COUNT_2P = 8 as const;
+export const COLONY_TOTAL_COUNT = 12 as const;
+export const COLONY_COST = 11 as const;
+export const COLONY_VP = 10 as const;
 
 // game defaults
-export const DEFAULT_TURN_ACTIONS = 1;
-export const DEFAULT_TURN_BUYS = 1;
-export const DEFAULT_TURN_COINS = 0;
-export const DEFAULT_TURN_CARDS = 5;
+export const DEFAULT_TURN_ACTIONS = 1 as const;
+export const DEFAULT_TURN_BUYS = 1 as const;
+export const DEFAULT_TURN_COINS = 0 as const;
+export const DEFAULT_TURN_CARDS = 5 as const;
 
 /**
  * Default values for the expansions enabled.
@@ -353,7 +353,7 @@ export const NoPlayerActions = [
   GameLogAction.LOAD_GAME,
   GameLogAction.PAUSE,
   GameLogAction.UNPAUSE,
-];
+] as const;
 
 /**
  * A list of actions that require a count
@@ -410,7 +410,7 @@ export const AdjustmentActions = [
   GameLogAction.REMOVE_NEXT_TURN_CARDS,
   GameLogAction.ADD_NEXT_TURN_DISCARD,
   GameLogAction.REMOVE_NEXT_TURN_DISCARD,
-];
+] as const;
 
 /**
  * A list of actions that have a negative adjustment.
@@ -444,7 +444,7 @@ export const NegativeAdjustmentActions = [
   GameLogAction.REMOVE_NEXT_TURN_COINS,
   GameLogAction.REMOVE_NEXT_TURN_CARDS,
   GameLogAction.REMOVE_NEXT_TURN_DISCARD,
-];
+] as const;
 
 /**
  * Actions that have an associated player index. Others are expected to have NO_PLAYER (-1).
@@ -455,17 +455,20 @@ export const ActionsWithPlayer = [
   GameLogAction.NEXT_TURN,
   GameLogAction.SELECT_PLAYER,
   GameLogAction.GROUPED_ACTION,
-];
+] as const;
 
 /**
  * Actions that can only be undone if they are the last action in the game log.
  */
-export const ActionsWithOnlyLastActionUndo = [GameLogAction.SELECT_PLAYER, GameLogAction.NEXT_TURN];
+export const ActionsWithOnlyLastActionUndo = [
+  GameLogAction.SELECT_PLAYER,
+  GameLogAction.NEXT_TURN,
+] as const;
 
 /**
  * Actions that cannot be undone.
  */
-export const NoUndoActions = [...NoPlayerActions, GameLogAction.START_GAME];
+export const NoUndoActions = [...NoPlayerActions, GameLogAction.START_GAME] as const;
 
 /**
  * State machine transitions for the game steps.
@@ -476,12 +479,12 @@ export const StepTransitions: Record<CurrentStep, CurrentStep> = {
   [CurrentStep.SetGameOptions]: CurrentStep.Game,
   [CurrentStep.Game]: CurrentStep.EndGame,
   [CurrentStep.EndGame]: CurrentStep.EndGame,
-};
+} as const;
 
-export const SaveGameStorageKey = '@dominion_saved_games';
-export const SaveGameStorageKeyPrefix = '@dominion_game_';
-export const AutoSaveGameSaveName = 'AutoSave';
-export const AutoSaveGameSaveId = 'autosave';
+export const SaveGameStorageKey = '@dominion_saved_games' as const;
+export const SaveGameStorageKeyPrefix = '@dominion_game_' as const;
+export const AutoSaveGameSaveName = 'AutoSave' as const;
+export const AutoSaveGameSaveId = 'autosave' as const;
 
 export const DefaultPlayerColors = [
   '#e57373',
@@ -490,11 +493,11 @@ export const DefaultPlayerColors = [
   '#ffd54f',
   '#ba68c8',
   '#4db6ac',
-];
+] as const;
 
-export const APP_TITLE = 'Unofficial Dominion Assistant';
+export const APP_TITLE = 'Unofficial Dominion Assistant' as const;
 export const APP_TAGLINE =
-  'This React application enhances your Dominion gameplay experience with comprehensive features for game management, scoring, and player interaction.';
+  'This React application enhances your Dominion gameplay experience with comprehensive features for game management, scoring, and player interaction.' as const;
 export const APP_FEATURES = [
   'Player Management: Add, remove, and track multiple players',
   'Dynamic Scoring: Real-time calculation and leaderboard',
@@ -506,8 +509,10 @@ export const APP_FEATURES = [
   'Intuitive UI: User-friendly Material-UI components',
   'Victory point graphing/statistics',
   'Most-recent move is auto-saved to local storage',
-];
+] as const;
 export const APP_MINI_DISCLAIMER =
-  'Unofficial Dominion Assistant is an open-source project and not affiliated with or endorsed by the makers of Dominion or Donald X Vaccarino. It is offered free of charge and is provided as-is, and with limited support. Please consider supporting Digital Defiance to promote open source and help us to serve the open source community.';
+  'Unofficial Dominion Assistant is an open-source project and not affiliated with or endorsed by the makers of Dominion or Donald X Vaccarino. It is offered free of charge and is provided as-is, and with limited support. Please consider supporting Digital Defiance to promote open source and help us to serve the open source community.' as const;
 export const APP_MINI_DISCLAIMER_NOTE =
-  'Please note that this tool requires the physical game of Dominion to play.';
+  'Please note that this tool requires the physical game of Dominion to play.' as const;
+
+export const TITLE_FONT = 'CharlemagneStdBold' as const;

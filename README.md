@@ -213,6 +213,12 @@ Join our community of developers.
 
 ## Changelog
 
+### Sat Mar 14 10:44:00 2025
+
+- Version 0.14.3
+
+  - Minor fix to undo logic to fix a bug
+
 ### Tue Mar 12 21:41:00 2025
 
 - Version 0.14.2

@@ -9,6 +9,7 @@ import {
   APP_MINI_DISCLAIMER_NOTE,
   APP_FEATURES,
   VERSION_NUMBER,
+  TITLE_FONT,
 } from '@/game/constants';
 import CenteredContainer from '@/components/CenteredContainer';
 
@@ -84,10 +85,7 @@ export default function AboutScreen() {
                   }}
                 />
               </Box>
-              <Typography
-                variant="h4"
-                sx={{ fontFamily: 'CharlemagneStdBold', textAlign: 'center', mb: 2 }}
-              >
+              <Typography variant="h4" sx={{ fontFamily: TITLE_FONT, textAlign: 'center', mb: 2 }}>
                 {APP_TITLE}
               </Typography>
               <Typography variant="body1" component="p" align="center">

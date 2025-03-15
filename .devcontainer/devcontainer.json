@@ -20,8 +20,9 @@
     }
   },
   "containerEnv": {
-    "NVM_VERSION": "20.9.0",
-    "PLAYWRIGHT_HTML_HOST": "0.0.0.0"
+    "DEFAULT_NVM_VERSION": "22",
+    "PLAYWRIGHT_HTML_HOST": "0.0.0.0",
+    "DEFAULT_YARN_VERSION": "4.7.0"
   },
   "remoteEnv": {
     "DOTENV_CONFIG_PATH": "/workspaces/dominion-assistant/.env"
@@ -37,7 +38,7 @@
   "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "export $(grep -v '^#' /workspaces/dominion-assistant/.env | xargs) && ./fontawesome-npmrc.sh && ./setup-nvm.sh && yarn install && ./install-globals.sh && ./install-copilot-cli.sh && ./setup-shell-config.sh && export $(grep -v '^#' ${DOTENV_CONFIG_PATH} | xargs) && npx nx reset"
+  "postCreateCommand": "export $(grep -v '^#' /workspaces/dominion-assistant/.env | xargs) && ./fontawesome-npmrc.sh && ./setup-nvm.sh && ./recover-yarn.sh && yarn install && ./install-globals.sh && ./install-copilot-cli.sh && ./setup-shell-config.sh && export $(grep -v '^#' ${DOTENV_CONFIG_PATH} | xargs) && npx nx reset"
 
   // Configure tool-specific properties.
   // "customizations": {},

@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { TypographyProps } from '@mui/material/Typography';
+import { TITLE_FONT } from '@/game/constants';
 
 interface SuperCapsSpanProps extends TypographyProps {
   sx?: object;
@@ -10,7 +11,7 @@ interface SuperCapsSpanProps extends TypographyProps {
 const SmallCapsSpan = styled(Typography)<SuperCapsSpanProps>(() => ({
   fontVariantCaps: 'small-caps',
   display: 'inline-block',
-  fontFamily: 'CharlemagneStdBold',
+  fontFamily: TITLE_FONT,
   lineHeight: 1,
 }));
 
