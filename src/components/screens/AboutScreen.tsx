@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Link, Paper, List, ListItem, ListItemText } from '@mui/material';
-import DominionTransparentLogo from '@/assets/images/Dominion-tx.png';
+import DominionTransparentLogo from '@/assets/images/DominionAssistant.png';
 import SuperCapsText from '@/components/SuperCapsText';
 import {
   APP_TITLE,
@@ -205,6 +205,14 @@ export default function AboutScreen() {
             rel="noopener noreferrer"
           >
             {VERSION_NUMBER}
+          </Link>
+          {' • '}
+          <Link
+            href="https://github.com/Digital-Defiance/DominionAssistant/blob/main/PRIVACY.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
           </Link>
         </Typography>
       </Box>

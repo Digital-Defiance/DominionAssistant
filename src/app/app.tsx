@@ -7,7 +7,7 @@ import BookIcon from '@mui/icons-material/Book';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsIcon from '@mui/icons-material/Settings';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import DominionVictoryIcon from '@/assets/images/Dominion-Victory.png';
+import DominionVictoryIcon from '@/assets/images/DominionAssistant.png';
 import TabBarIcon from '@/components/TabBarIcon';
 import TabView, { TabViewHandle } from '@/components/TabView';
 import DominionAssistantScreen from '@/components/screens/DominionAssistantScreen';

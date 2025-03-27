@@ -213,6 +213,13 @@ Join our community of developers.
 
 ## Changelog
 
+### Sat Mar 19 12:05:00 2025
+
+- Version 0.14.4
+
+  - Dominion Assistant Logo
+  - Privacy Policy
+
 ### Sat Mar 14 10:44:00 2025
 
 - Version 0.14.3
