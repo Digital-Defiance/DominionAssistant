@@ -347,7 +347,7 @@ export function EmptyGameState(): IGame {
 /**
  * A list of actions that do not affect player state.
  */
-export const NoPlayerActions = [
+export const NoPlayerActions: GameLogAction[] = [
   GameLogAction.END_GAME,
   GameLogAction.SAVE_GAME,
   GameLogAction.LOAD_GAME,
@@ -358,7 +358,7 @@ export const NoPlayerActions = [
 /**
  * A list of actions that require a count
  */
-export const AdjustmentActions = [
+export const AdjustmentActions: GameLogAction[] = [
   // turn actions
   GameLogAction.ADD_ACTIONS,
   GameLogAction.REMOVE_ACTIONS,
@@ -415,7 +415,7 @@ export const AdjustmentActions = [
 /**
  * A list of actions that have a negative adjustment.
  */
-export const NegativeAdjustmentActions = [
+export const NegativeAdjustmentActions: GameLogAction[] = [
   // turn actions
   GameLogAction.REMOVE_ACTIONS,
   GameLogAction.REMOVE_COINS,
@@ -449,7 +449,7 @@ export const NegativeAdjustmentActions = [
 /**
  * Actions that have an associated player index. Others are expected to have NO_PLAYER (-1).
  */
-export const ActionsWithPlayer = [
+export const ActionsWithPlayer: GameLogAction[] = [
   ...AdjustmentActions,
   GameLogAction.START_GAME,
   GameLogAction.NEXT_TURN,
@@ -460,7 +460,7 @@ export const ActionsWithPlayer = [
 /**
  * Actions that can only be undone if they are the last action in the game log.
  */
-export const ActionsWithOnlyLastActionUndo = [
+export const ActionsWithOnlyLastActionUndo: GameLogAction[] = [
   GameLogAction.SELECT_PLAYER,
   GameLogAction.NEXT_TURN,
 ] as const;
@@ -468,7 +468,10 @@ export const ActionsWithOnlyLastActionUndo = [
 /**
  * Actions that cannot be undone.
  */
-export const NoUndoActions = [...NoPlayerActions, GameLogAction.START_GAME] as const;
+export const NoUndoActions: GameLogAction[] = [
+  ...NoPlayerActions,
+  GameLogAction.START_GAME,
+] as const;
 
 /**
  * State machine transitions for the game steps.
