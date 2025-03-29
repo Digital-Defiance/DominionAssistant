@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
-import { useNavigate, useLocation } from 'react-router-dom';
 import DominionAssistant from '@/components/DominionAssistant';
 import SuperCapsText from '@/components/SuperCapsText';
 

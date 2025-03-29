@@ -21,6 +21,7 @@ export function deepClone<T>(obj: T): T {
   }
 
   // Handle Objects
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const objCopy = {} as { [key: string]: any };
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -35,7 +36,7 @@ export function deepClone<T>(obj: T): T {
  * @param date - The object to check
  * @returns True if the object is a valid date
  */
-export function isValidDate(date: any): date is Date {
+export function isValidDate(date: Date): date is Date {
   return date instanceof Date && !isNaN(date.getTime());
 }
 
@@ -44,7 +45,7 @@ export function isValidDate(date: any): date is Date {
  * @param dateString - The string to check
  * @returns True if the string is a valid date
  */
-export function isValidDateString(dateString: any): boolean {
+export function isValidDateString(dateString: string | number | Date): boolean {
   const date = new Date(dateString);
   return typeof dateString === 'string' && !isNaN(date.getTime());
 }

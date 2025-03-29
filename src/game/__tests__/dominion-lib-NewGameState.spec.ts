@@ -7,7 +7,6 @@ import { MinPlayersError } from '@/game/errors/min-players';
 import { MaxPlayersError } from '@/game/errors/max-players';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
-import { faker } from '@faker-js/faker';
 
 jest.mock('@/game/interfaces/set-mats/prophecy', () => ({
   calculateInitialSunTokens: jest.fn(() => ({ suns: 5 })),

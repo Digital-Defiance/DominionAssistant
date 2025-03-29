@@ -235,37 +235,51 @@ export function updatePlayerField<T extends keyof PlayerFieldMap>(
   }
   const player = updatedGame.players[playerIndex];
 
-  // Check if the field is valid
-  if (field !== 'victory' && field !== 'turn' && field !== 'mats' && field !== 'newTurn') {
-    throw new InvalidFieldError(field as string);
-  }
-
-  // Check if the subfield decrement would go below 0
-  if (((player[field] as any)[subfield] || 0) + increment < 0) {
-    throw new NotEnoughSubfieldError(field, subfield);
-  }
-
-  // Check if the supply decrement would go below 0
+  // Check if the supply decrement would go below 0 (moved check earlier for clarity)
   const decrementSupply =
     field === 'victory' &&
-    ['estates', 'duchies', 'provinces', 'colonies', 'curses'].includes(subfield);
+    ['estates', 'duchies', 'provinces', 'colonies', 'curses'].includes(subfield as string); // Cast needed here
 
   if (decrementSupply) {
     const supplyCount = updatedGame.supply[subfield as keyof IGameSupply] as number;
     if (increment > 0 && supplyCount < increment) {
-      throw new NotEnoughSupplyError(subfield as string);
+      throw new NotEnoughSupplyError(subfield as string); // Cast needed here
     }
   }
 
-  // Perform the actual updates
-  (player[field] as any)[subfield] = Math.max(
-    ((player[field] as any)[subfield] || 0) + increment,
-    0
-  );
-
-  // Update the supply if the field is a victory field and victoryTrash is not true
-  if (decrementSupply && !victoryTrash) {
-    (updatedGame.supply[subfield as keyof IGameSupply] as number) -= increment;
+  // Use if/else if to narrow types
+  if (field === 'victory') {
+    const currentVal = player.victory[subfield as keyof typeof player.victory] || 0;
+    if (currentVal + increment < 0) {
+      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
+    }
+    player.victory[subfield as keyof typeof player.victory] = Math.max(currentVal + increment, 0);
+    // Update supply (moved logic here for victory field)
+    if (decrementSupply && !victoryTrash) {
+      (updatedGame.supply[subfield as keyof IGameSupply] as number) -= increment;
+    }
+  } else if (field === 'turn') {
+    const currentVal = player.turn[subfield as keyof typeof player.turn] || 0;
+    if (currentVal + increment < 0) {
+      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
+    }
+    player.turn[subfield as keyof typeof player.turn] = Math.max(currentVal + increment, 0);
+  } else if (field === 'mats') {
+    const currentVal = player.mats[subfield as keyof typeof player.mats] || 0;
+    if (currentVal + increment < 0) {
+      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
+    }
+    player.mats[subfield as keyof typeof player.mats] = Math.max(currentVal + increment, 0);
+  } else if (field === 'newTurn') {
+    const currentVal = player.newTurn[subfield as keyof typeof player.newTurn] || 0;
+    if (currentVal + increment < 0) {
+      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
+    }
+    player.newTurn[subfield as keyof typeof player.newTurn] = Math.max(currentVal + increment, 0);
+  } else {
+    // This should be unreachable due to the generic constraint and earlier check,
+    // but adding it satisfies exhaustive checks and provides an error boundary.
+    throw new InvalidFieldError(field as string);
   }
 
   return updatedGame;
@@ -552,7 +566,7 @@ export function getPlayerLabel(players: IPlayer[], playerIndex: number) {
 
     // Check if character is a printable ASCII character
     // This regex matches alphanumeric characters and common printable symbols
-    if (/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]$/.test(char)) {
+    if (/^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]$/.test(char)) {
       return char.toUpperCase();
     }
   }

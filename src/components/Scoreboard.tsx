@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import {
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -8,10 +7,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Typography,
   Tooltip,
-  Avatar,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import SuperCapsText from '@/components/SuperCapsText';
@@ -29,6 +26,7 @@ const TableScore = styled(Typography)(() => ({
 }));
 
 const Scoreboard: FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { gameState, setGameState } = useGameContext();
 
   if (!gameState) {
