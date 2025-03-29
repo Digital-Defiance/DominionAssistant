@@ -502,6 +502,77 @@ export function addLogEntry(
       start: turnStartEvent.timestamp,
       end: newLog.timestamp,
       turnDuration: newLog.gameTime - turnStartEvent.gameTime,
+      // Populate new per-player stats
+      playerActions: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.actions;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerBuys: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.buys;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerCoins: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.coins;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerCardsDrawn: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.cards; // Map to player.turn.cards
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerGains: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.gains;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerDiscards: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.discard; // Map to player.turn.discard
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerCoffers: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.coffers;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerVillagers: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.villagers;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerDebt: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.debt;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerFavors: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.favors;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
     };
     game.turnStatisticsCache.push(turnStatisticsEntry);
   }
@@ -570,9 +641,97 @@ export function applyLogAction(game: IGame, logEntry: ILogEntry): IGame {
   } else if (logEntry.action === GameLogAction.END_GAME) {
     updatedGame.currentStep = CurrentStep.EndGame;
   } else if (logEntry.action === GameLogAction.NEXT_TURN) {
+    // --- Calculate stats BEFORE resetting player turn state ---
+    const turnStartEventForStats = getTurnStartEntry(game.log, game.currentTurn); // Use original log
+    const turnStatisticsEntry: ITurnStatistics = {
+      turn: game.currentTurn,
+      // Use the 'game' state (before modifications) for accurate end-of-turn stats
+      playerScores: game.players.map((player) => calculateVictoryPoints(player)),
+      supply: deepClone<IGameSupply>(game.supply),
+      playerIndex: logEntry.prevPlayerIndex ?? game.currentPlayerIndex, // Player whose turn just ended
+      start: turnStartEventForStats.timestamp,
+      end: logEntry.timestamp,
+      turnDuration: logEntry.gameTime - turnStartEventForStats.gameTime,
+      playerActions: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.actions;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerBuys: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.buys;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerCoins: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.coins;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerCardsDrawn: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.cards;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerGains: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.gains;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerDiscards: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.discard;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerCoffers: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.coffers;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerVillagers: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.villagers;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerDebt: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.debt;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerFavors: game.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.favors;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+    };
+    // --- End Calculate stats ---
+
+    // Push the pre-calculated stats for NEXT_TURN *before* resetting state
+    // This was the variable calculated above using the 'game' state before modifications
+    updatedGame.turnStatisticsCache.push(turnStatisticsEntry);
+
     // Move to next player
     updatedGame.currentTurn = game.currentTurn + 1;
-    updatedGame.currentPlayerIndex = logEntry.playerIndex;
+    updatedGame.currentPlayerIndex = logEntry.playerIndex; // This is the index of the player whose turn is *starting*
     updatedGame.selectedPlayerIndex = logEntry.playerIndex;
 
     // Reset all players' turn counters to their newTurn values
@@ -634,18 +793,97 @@ export function applyLogAction(game: IGame, logEntry: ILogEntry): IGame {
   }
 
   updatedGame.log.push(deepClone<ILogEntry>(logEntry));
-  const turnStartEvent = getTurnStartEntry(updatedGame.log, game.currentTurn);
-  if (logEntry.action === GameLogAction.NEXT_TURN || logEntry.action === GameLogAction.END_GAME) {
-    const turnStatisticsEntry: ITurnStatistics = {
+  // Statistics for NEXT_TURN are pushed earlier, before state reset.
+  if (logEntry.action === GameLogAction.END_GAME) {
+    // Calculate and push stats for END_GAME (using final game state)
+    const turnStartEventForEnd = getTurnStartEntry(updatedGame.log, game.currentTurn); // Use updatedGame.log here
+    const endTurnStatisticsEntry: ITurnStatistics = {
       turn: game.currentTurn,
-      playerScores: game.players.map((player) => calculateVictoryPoints(player)),
-      supply: deepClone<IGameSupply>(game.supply),
-      playerIndex: logEntry.prevPlayerIndex ?? logEntry.playerIndex,
-      start: turnStartEvent.timestamp,
+      playerScores: updatedGame.players.map((player) => calculateVictoryPoints(player)), // Use updatedGame state
+      supply: deepClone<IGameSupply>(updatedGame.supply), // Use updatedGame state
+      playerIndex: logEntry.prevPlayerIndex ?? game.currentPlayerIndex, // Player whose turn ended
+      start: turnStartEventForEnd.timestamp,
       end: logEntry.timestamp,
-      turnDuration: logEntry.gameTime - turnStartEvent.gameTime,
+      turnDuration: logEntry.gameTime - turnStartEventForEnd.gameTime,
+      playerActions: updatedGame.players.reduce(
+        // Use updatedGame state
+        (acc, player, index) => {
+          acc[index] = player.turn.actions;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      // Re-adding missing properties below
+      playerDiscards: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.discard; // Map to player.turn.discard
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerCoffers: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.coffers;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerVillagers: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.villagers;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerDebt: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.debt;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerFavors: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.mats.favors;
+          return acc;
+        },
+        {} as { [playerIndex: number]: number }
+      ),
+      playerBuys: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.buys;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerCoins: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.coins;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerCardsDrawn: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.cards; // Map to player.turn.cards
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      playerGains: updatedGame.players.reduce(
+        (acc, player, index) => {
+          acc[index] = player.turn.gains;
+          return acc;
+        },
+        {} as { [idx: number]: number }
+      ),
+      // playerDiscards already included above
+      // playerCoffers already included above
+      // playerVillagers already included above
+      // playerDebt already included above
+      // playerFavors already included above
     };
-    game.turnStatisticsCache.push(turnStatisticsEntry);
+    updatedGame.turnStatisticsCache.push(endTurnStatisticsEntry);
   }
 
   return updatedGame;
@@ -1302,8 +1540,79 @@ export function rebuildTurnStatisticsCache(game: IGame): Array<ITurnStatistics> 
         end: turnEnd,
         supply: reconstructedGame.supply,
         playerScores: reconstructedGame.players.map((player) => calculateVictoryPoints(player)),
-        playerIndex: entry.prevPlayerIndex ?? game.currentPlayerIndex,
+        playerIndex: entry.prevPlayerIndex ?? game.currentPlayerIndex, // Use original game's currentPlayerIndex for consistency? No, use entry's prevPlayerIndex.
         turnDuration: entry.gameTime - turnStartGameTime,
+        // Populate new per-player stats from reconstructed state
+        playerActions: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.actions;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerBuys: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.buys;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerCoins: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.coins;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerCardsDrawn: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.cards; // Map to player.turn.cards
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerGains: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.gains;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerDiscards: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.discard; // Map to player.turn.discard
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerCoffers: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.coffers;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerVillagers: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.villagers;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerDebt: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.debt;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerFavors: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.favors;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
       });
       turnStart = entry.timestamp;
       turnStartGameTime = entry.gameTime;
@@ -1316,8 +1625,79 @@ export function rebuildTurnStatisticsCache(game: IGame): Array<ITurnStatistics> 
         end: turnEnd,
         supply: reconstructedGame.supply,
         playerScores: reconstructedGame.players.map((player) => calculateVictoryPoints(player)),
-        playerIndex: entry.prevPlayerIndex ?? game.currentPlayerIndex,
+        playerIndex: entry.prevPlayerIndex ?? game.currentPlayerIndex, // Use original game's currentPlayerIndex for consistency? No, use entry's prevPlayerIndex.
         turnDuration: entry.gameTime - turnStartGameTime,
+        // Populate new per-player stats from reconstructed state
+        playerActions: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.actions;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerBuys: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.buys;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerCoins: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.coins;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerCardsDrawn: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.cards; // Map to player.turn.cards
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerGains: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.gains;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerDiscards: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.turn.discard; // Map to player.turn.discard
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerCoffers: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.coffers;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerVillagers: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.villagers;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerDebt: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.debt;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
+        playerFavors: reconstructedGame.players.reduce(
+          (acc, player, index) => {
+            acc[index] = player.mats.favors;
+            return acc;
+          },
+          {} as { [playerIndex: number]: number }
+        ),
       });
       turnStartGameTime = entry.gameTime;
       break;

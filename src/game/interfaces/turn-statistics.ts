@@ -10,6 +10,46 @@ export interface ITurnStatistics {
    */
   playerScores: { [playerIndex: number]: number };
   /**
+   * The number of actions played by each player during the turn
+   */
+  playerActions: { [playerIndex: number]: number };
+  /**
+   * The number of buys used by each player during the turn
+   */
+  playerBuys: { [playerIndex: number]: number };
+  /**
+   * The amount of coin generated/spent by each player during the turn
+   */
+  playerCoins: { [playerIndex: number]: number };
+  /**
+   * The number of cards drawn by each player during the turn
+   */
+  playerCardsDrawn: { [playerIndex: number]: number };
+  /**
+   * The number of cards gained by each player during the turn
+   */
+  playerGains: { [playerIndex: number]: number };
+  /**
+   * The number of cards discarded by each player during the turn
+   */
+  playerDiscards: { [playerIndex: number]: number };
+  /**
+   * The Coffer count for each player at the end of the turn
+   */
+  playerCoffers: { [playerIndex: number]: number };
+  /**
+   * The Villager count for each player at the end of the turn
+   */
+  playerVillagers: { [playerIndex: number]: number };
+  /**
+   * The Debt count for each player at the end of the turn
+   */
+  playerDebt: { [playerIndex: number]: number };
+  /**
+   * The Favor count for each player at the end of the turn
+   */
+  playerFavors: { [playerIndex: number]: number };
+  /**
    * The supply at the end of the turn
    */
   supply: IGameSupply;

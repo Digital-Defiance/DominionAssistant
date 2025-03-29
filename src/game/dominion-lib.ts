@@ -20,6 +20,7 @@ import {
   HAND_STARTING_ESTATES_FROM_SUPPLY,
   NOT_PRESENT,
   NO_PLAYER,
+  VictoryFieldToSupplyFieldMap,
 } from '@/game/constants';
 import { computeStartingSupply as computeBaseStartingSupply } from '@/game/interfaces/set-kingdom/base';
 import {
@@ -27,12 +28,16 @@ import {
   NullSet as ProsperityNullSet,
 } from '@/game/interfaces/set-kingdom/prosperity';
 import { IPlayer } from '@/game/interfaces/player';
+import { IVictoryDetails } from '@/game/interfaces/victory-details';
+import { IMatDetails } from '@/game/interfaces/mat-details';
+import { IPlayerGameTurnDetails } from '@/game/interfaces/player-game-turn-details';
 import {
   PlayerField,
   PlayerFieldMap,
   PlayerSubFields,
   ProphecyField,
   ProphecySubField,
+  VictoryField,
 } from '@/game/types';
 import { CurrentStep } from '@/game/enumerations/current-step';
 import { calculateInitialSunTokens } from '@/game/interfaces/set-mats/prophecy';
@@ -44,9 +49,82 @@ import { MaxPlayersError } from '@/game/errors/max-players';
 import { NotEnoughSubfieldError } from '@/game/errors/not-enough-subfield';
 import { RankedPlayer } from '@/game/interfaces/ranked-player';
 import { deepClone } from '@/game/utils';
-import { IPlayerGameTurnDetails } from '@/game/interfaces/player-game-turn-details';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 import { InvalidPlayerIndexError } from '@/game/errors/invalid-player-index';
+
+/**
+ * Updates a specific victory subfield for a player by applying the given increment.
+ *
+ * This function adjusts the value of a designated subfield in the player's victory details,
+ * ensuring that the result is not negative. If the new value would be below zero, it throws a
+ * {@link NotEnoughSubfieldError} to prevent invalid state.
+ *
+ * @param playerVictory - The player's victory details.
+ * @param subfield - The subfield within the victory details to update.
+ * @param increment - The value to add to the current subfield value.
+ *
+ * @throws {NotEnoughSubfieldError} If the update would result in a negative value.
+ */
+function updateVictoryDetail(
+  playerVictory: IVictoryDetails,
+  subfield: keyof IVictoryDetails,
+  increment: number
+): void {
+  const currentVal = playerVictory[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('victory', subfield);
+  }
+  playerVictory[subfield] = currentVal + increment;
+}
+
+/**
+ * Updates a player's turn detail by adding the specified increment to the provided subfield.
+ *
+ * If the resulting value would be negative, a {@link NotEnoughSubfieldError} is thrown.
+ *
+ * @param playerTurn The player's current turn details.
+ * @param subfield The property of the turn details to update.
+ * @param increment The value to add to the subfield (can be positive or negative).
+ *
+ * @throws {NotEnoughSubfieldError} Thrown when the updated subfield value would be negative.
+ */
+function updateTurnDetail(
+  playerTurn: IPlayerGameTurnDetails,
+  subfield: keyof IPlayerGameTurnDetails,
+  increment: number
+): void {
+  const currentVal = playerTurn[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('turn', subfield); // Or 'newTurn' depending on context
+  }
+  playerTurn[subfield] = Math.max(currentVal + increment, 0);
+}
+
+/**
+ * Updates the specified subfield within the player's mat details by applying an increment.
+ *
+ * The function retrieves the current value of the subfield (defaulting to 0 if undefined) and adds the increment.
+ * If the result is negative, it throws a NotEnoughSubfieldError to prevent an invalid state.
+ *
+ * @param playerMats - The player's mat details.
+ * @param subfield - The specific subfield in the mat details to update.
+ * @param increment - The value to apply to the current subfield (can be positive or negative).
+ *
+ * @throws {NotEnoughSubfieldError} If updating would result in a negative value.
+ */
+function updateMatDetail(
+  playerMats: IMatDetails,
+  subfield: keyof IMatDetails,
+  increment: number
+): void {
+  const currentVal = playerMats[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('mats', subfield);
+  }
+  playerMats[subfield] = Math.max(currentVal + increment, 0);
+}
+
+// --- End Helper Functions ---
 
 /**
  * Calculate the victory points for a player.
@@ -212,14 +290,26 @@ export const NewGameState = (gameStateWithOptions: IGame, gameStart: Date): IGam
 };
 
 /**
- * Update the player field with the given increment.
- * @param game - The game state
- * @param playerIndex - The index of the player
- * @param field - The field to update
- * @param subfield - The subfield to update
- * @param increment - The amount to increment the field by
- * @param victoryTrash - Whether to trash the victory card (does not go back into supply)
- * @returns The updated game state
+ * Updates a specified field for a given player in the game state.
+ *
+ * This function creates a deep copy of the game state and modifies a particular field on the player,
+ * delegating the update to specific helper functions based on the field type:
+ * - For the 'victory' field, it verifies that the game supply has enough cards for subfields corresponding
+ *   to card piles (such as estates, duchies, provinces, colonies, or curses) and adjusts the supply accordingly,
+ *   unless the update is marked as a trash operation.
+ * - For 'turn', 'mats', and 'newTurn', it updates the corresponding subfield using their respective helpers.
+ *
+ * @param game - The current game state.
+ * @param playerIndex - The index of the player to update.
+ * @param field - The player field to update (either 'victory', 'turn', 'mats', or 'newTurn').
+ * @param subfield - The specific subfield within the selected field to update.
+ * @param increment - The amount to adjust the subfield by.
+ * @param victoryTrash - When updating the 'victory' field, if true, the increment does not affect the supply.
+ * @returns The new game state with the updated player field.
+ *
+ * @throws {InvalidPlayerIndexError} If the player index is out of bounds.
+ * @throws {NotEnoughSupplyError} If there is insufficient supply when decrementing a victory subfield.
+ * @throws {InvalidFieldError} If the provided field type is not recognized.
  */
 export function updatePlayerField<T extends keyof PlayerFieldMap>(
   game: IGame,
@@ -235,37 +325,36 @@ export function updatePlayerField<T extends keyof PlayerFieldMap>(
   }
   const player = updatedGame.players[playerIndex];
 
-  // Check if the field is valid
-  if (field !== 'victory' && field !== 'turn' && field !== 'mats' && field !== 'newTurn') {
-    throw new InvalidFieldError(field as string);
-  }
-
-  // Check if the subfield decrement would go below 0
-  if (((player[field] as any)[subfield] || 0) + increment < 0) {
-    throw new NotEnoughSubfieldError(field, subfield);
-  }
-
-  // Check if the supply decrement would go below 0
-  const decrementSupply =
-    field === 'victory' &&
-    ['estates', 'duchies', 'provinces', 'colonies', 'curses'].includes(subfield);
-
-  if (decrementSupply) {
-    const supplyCount = updatedGame.supply[subfield as keyof IGameSupply] as number;
-    if (increment > 0 && supplyCount < increment) {
-      throw new NotEnoughSupplyError(subfield as string);
+  // Delegate to helper functions based on field type
+  if (field === 'victory') {
+    // Check supply before potentially modifying player state
+    const fieldMapping = VictoryFieldToSupplyFieldMap[subfield as VictoryField];
+    const decrementSupply = fieldMapping !== undefined;
+    if (decrementSupply) {
+      const supplyKey = subfield as keyof IGameSupply;
+      const supplyCount = updatedGame.supply[supplyKey] as number;
+      if (increment > 0 && supplyCount < increment) {
+        throw new NotEnoughSupplyError(supplyKey);
+      }
     }
-  }
 
-  // Perform the actual updates
-  (player[field] as any)[subfield] = Math.max(
-    ((player[field] as any)[subfield] || 0) + increment,
-    0
-  );
+    // Call helper
+    updateVictoryDetail(player.victory, subfield as keyof IVictoryDetails, increment);
 
-  // Update the supply if the field is a victory field and victoryTrash is not true
-  if (decrementSupply && !victoryTrash) {
-    (updatedGame.supply[subfield as keyof IGameSupply] as number) -= increment;
+    // Update supply after successful player update
+    if (decrementSupply && !victoryTrash) {
+      (updatedGame.supply[subfield as keyof IGameSupply] as number) -= increment;
+    }
+  } else if (field === 'turn') {
+    updateTurnDetail(player.turn, subfield as keyof IPlayerGameTurnDetails, increment);
+  } else if (field === 'mats') {
+    updateMatDetail(player.mats, subfield as keyof IMatDetails, increment);
+  } else if (field === 'newTurn') {
+    // Assuming newTurn has the same structure as turn for subfields
+    updateTurnDetail(player.newTurn, subfield as keyof IPlayerGameTurnDetails, increment);
+  } else {
+    // This path should be unreachable due to the generic constraint
+    throw new InvalidFieldError(`Unhandled field type: ${field as string}`);
   }
 
   return updatedGame;
@@ -528,10 +617,14 @@ export function shuffleArray<T extends unknown>(array: T[]): { shuffled: T[]; ch
 }
 
 /**
- * Gets the first printable character from a player's name or their player number as fallback
- * @param {Array} players - Array of player objects
- * @param {number} playerIndex - Index of the current player in the array
- * @returns {string} - First printable character or player number (index + 1)
+ * Returns the first uppercase printable character from the specified player's name, or the player's number as a fallback.
+ *
+ * The function inspects the player's name for a printable ASCII character. If the player's index is out of bounds,
+ * the name is missing or invalid, or no printable character is found, it returns the player's number (index + 1) as a string.
+ *
+ * @param players - The array of player objects.
+ * @param playerIndex - The index of the target player in the array.
+ * @returns The uppercase printable character from the player's name, or the player's number as a string.
  */
 export function getPlayerLabel(players: IPlayer[], playerIndex: number) {
   // Return player number if index is invalid
@@ -552,7 +645,8 @@ export function getPlayerLabel(players: IPlayer[], playerIndex: number) {
 
     // Check if character is a printable ASCII character
     // This regex matches alphanumeric characters and common printable symbols
-    if (/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]$/.test(char)) {
+    // eslint-disable-next-line no-useless-escape
+    if (/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]$/.test(char)) {
       return char.toUpperCase();
     }
   }

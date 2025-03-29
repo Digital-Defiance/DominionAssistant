@@ -16,6 +16,8 @@ test('has title', async ({ page }) => {
 
 test('has features list', async ({ page }) => {
   await page.goto('/');
+  // Wait for a stable element like the main title first
+  await expect(page.locator('h4')).toBeVisible();
 
   for (const feature of APP_FEATURES) {
     await expect(page.locator(`text=${feature}`)).toBeVisible();
@@ -23,9 +25,11 @@ test('has features list', async ({ page }) => {
 });
 
 test('has messages section', async ({ page }) => {
-  await page.goto('/about');
+  await page.goto('/'); // Navigate to root path for AboutScreen
+  // Wait for a stable element like the main title first
+  await expect(page.locator('h4')).toBeVisible();
 
-  // Expect the messages section to be visible if there are messages.
+  // Check for the messages section (conditionally rendered)
   const messagesSection = page.locator('text=Messages');
   if ((await messagesSection.count()) > 0) {
     await expect(messagesSection).toBeVisible();
@@ -33,15 +37,26 @@ test('has messages section', async ({ page }) => {
 });
 
 test('has version number', async ({ page }) => {
-  await page.goto('/about');
+  await page.goto('/'); // Navigate to root path for AboutScreen
+  // Wait for the main H4 title to be visible first
+  await expect(page.locator('h4')).toBeVisible();
 
-  // Expect the version number to be visible.
-  const versionText = await page.locator('text=Version:').innerText();
+  // Expect the version number to be visible using getByText
+  const versionElement = page.getByText(/Version:/); // Use regex for flexibility
+  await expect(versionElement).toBeVisible();
+  const versionText = await versionElement.textContent();
   expect(versionText).toContain('Version:');
 });
 
 test('has about section', async ({ page }) => {
-  await page.goto('/about');
+  await page.goto('/'); // Navigate to root path for AboutScreen
+  // Wait for the main H4 title to be visible first
+  await expect(page.locator('h4')).toBeVisible();
+
+  // Locate the specific Paper element for the "About" section
+  const aboutPaper = page.locator('div.MuiPaper-root:has(span:text-is("About"))');
+  await expect(aboutPaper).toBeVisible(); // Ensure the about section itself is visible
+
   const aboutText = [
     'This application is created by',
     'Digital Defiance',
@@ -54,6 +69,7 @@ test('has about section', async ({ page }) => {
   ];
 
   for (const text of aboutText) {
-    await expect(page.locator(`text=${text}`)).toBeVisible();
+    // Use getByText within the located "About" paper
+    await expect(aboutPaper.getByText(text)).toBeVisible();
   }
 });

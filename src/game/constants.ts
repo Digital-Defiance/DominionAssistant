@@ -13,15 +13,16 @@ import { IRenaissanceFeatures } from '@/game/interfaces/set-features/renaissance
 import { IRisingSunFeatures } from '@/game/interfaces/set-features/rising-sun';
 import { IExpansionsEnabled } from '@/game/interfaces/expansions-enabled';
 import { calculateInitialSunTokens } from '@/game/interfaces/set-mats/prophecy';
+import { VictoryField } from './types';
 
 /**
  * The current game version
  */
-export const VERSION_NUMBER = '0.14.4' as const;
+export const VERSION_NUMBER = '0.15.0' as const;
 /**
  * The lowest version of the game that is compatible with this version of the save game format.
  */
-export const MINIMUM_COMPATIBLE_SAVE_VERSION = '0.13.0' as const;
+export const MINIMUM_COMPATIBLE_SAVE_VERSION = '0.15.0' as const;
 
 export const MIN_PLAYERS = 2 as const;
 export const MAX_PLAYERS = 6 as const;
@@ -482,6 +483,22 @@ export const StepTransitions: Record<CurrentStep, CurrentStep> = {
   [CurrentStep.SetGameOptions]: CurrentStep.Game,
   [CurrentStep.Game]: CurrentStep.EndGame,
   [CurrentStep.EndGame]: CurrentStep.EndGame,
+} as const;
+
+/**
+ * Victory sub-fields that have a supply value that needs to be tracked.
+ */
+export const VictoryFieldToSupplyFieldMap: Record<
+  VictoryField,
+  { gameSupply: keyof IGameSupply; victoryDetails: keyof IVictoryDetails } | undefined
+> = {
+  estates: { gameSupply: 'estates', victoryDetails: 'estates' },
+  duchies: { gameSupply: 'duchies', victoryDetails: 'duchies' },
+  provinces: { gameSupply: 'provinces', victoryDetails: 'provinces' },
+  colonies: { gameSupply: 'colonies', victoryDetails: 'colonies' },
+  curses: { gameSupply: 'curses', victoryDetails: 'curses' },
+  other: undefined,
+  tokens: undefined,
 } as const;
 
 export const SaveGameStorageKey = '@dominion_saved_games' as const;

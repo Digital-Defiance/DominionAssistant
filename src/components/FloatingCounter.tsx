@@ -6,7 +6,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import { useGameContext } from '@/components/GameContext';
 import { calculateVictoryPoints } from '@/game/dominion-lib';
-import DominionVictoryIcon from '@/assets/images/DominionAssistant.png';
+import DominionVictoryIcon from '@/assets/images/Dominion-Victory.png';
 import { styled } from '@mui/material';
 import { CurrentStep } from '@/game/enumerations/current-step';
 

@@ -1,14 +1,5 @@
 import React, { ChangeEvent, FC, MouseEvent, useState } from 'react';
-import {
-  Checkbox,
-  Chip,
-  Paper,
-  Box,
-  IconButton,
-  Popover,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Checkbox, Paper, Box, IconButton, Popover, Tooltip, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import LinkIcon from '@mui/icons-material/Link';
 import { styled } from '@mui/system';

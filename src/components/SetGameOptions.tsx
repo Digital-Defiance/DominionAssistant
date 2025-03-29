@@ -166,7 +166,7 @@ const SetGameOptions: FC<SetGameOptionsProps> = ({ startGame }) => {
           setGameState((prevState: IGame) => {
             return {
               ...prevState,
-              options: { ...prevState.options, trackDiscrd: e.target.checked },
+              options: { ...prevState.options, trackDiscard: e.target.checked },
             };
           });
         }}

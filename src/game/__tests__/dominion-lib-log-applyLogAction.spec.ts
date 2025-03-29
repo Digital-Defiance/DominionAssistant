@@ -8,6 +8,26 @@ import { NotEnoughProphecyError } from '@/game/errors/not-enough-prophecy';
 import { NotEnoughSubfieldError } from '@/game/errors/not-enough-subfield';
 import { deepClone } from '@/game/utils';
 import { IPlayerGameTurnDetails } from '../interfaces/player-game-turn-details';
+import { ITurnStatistics } from '../interfaces/turn-statistics';
+import { NO_PLAYER } from '../constants';
+
+// Helper function to create NEXT_TURN log entries
+const createNextTurnLogEntry = (
+  turn: number,
+  prevPlayerIndex: number,
+  currentPlayerIndex: number,
+  timestamp: Date,
+  gameTime: number
+): ILogEntry => ({
+  action: GameLogAction.NEXT_TURN,
+  playerIndex: currentPlayerIndex,
+  id: `turn-${turn}`,
+  timestamp,
+  gameTime,
+  prevPlayerIndex,
+  currentPlayerIndex,
+  turn,
+});
 
 describe('applyLogAction', () => {
   let mockGame: IGame;
@@ -361,4 +381,138 @@ describe('applyLogAction', () => {
     const updatedGame = applyLogAction(game, logEntry);
     expect(updatedGame.selectedPlayerIndex).toBe(0);
   });
+
+  // --- Tests for Turn Statistics Cache ---
+
+  it('should add correct turn statistics to cache on NEXT_TURN action', () => {
+    // Setup initial player states before the NEXT_TURN action is applied
+    mockGame.players[0].turn = { actions: 2, buys: 1, coins: 5, cards: 3, gains: 1, discard: 0 };
+    mockGame.players[1].turn = { actions: 1, buys: 2, coins: 3, cards: 5, gains: 0, discard: 2 };
+    mockGame.players[0].mats = { coffers: 3, villagers: 1, debt: 0, favors: 2 };
+    mockGame.players[1].mats = { coffers: 0, villagers: 0, debt: 2, favors: 0 };
+    mockGame.currentTurn = 5;
+    mockGame.currentPlayerIndex = 0; // Player 0's turn ends
+
+    // Add log entries for turns 2, 3, 4, 5
+    const gameStart = mockGame.log[0].timestamp;
+    let currentTime = gameStart.getTime();
+    let currentGameTime = 0;
+    for (let i = 2; i <= 5; i++) {
+      const prevPlayer = (i + mockGame.players.length - 2) % mockGame.players.length;
+      const currentPlayer = (i + mockGame.players.length - 1) % mockGame.players.length;
+      currentTime += 1000; // Increment time for each turn
+      currentGameTime += 1000;
+      mockGame.log.push(
+        createNextTurnLogEntry(i, prevPlayer, currentPlayer, new Date(currentTime), currentGameTime)
+      );
+    }
+
+    const logEntry: ILogEntry = {
+      action: GameLogAction.NEXT_TURN,
+      playerIndex: 1, // Player 1 starts turn 6
+      id: 'next-turn-id',
+      timestamp: new Date(gameStart.getTime() + 10000), // Ensure time progresses
+      gameTime: 10000,
+      prevPlayerIndex: 0,
+      currentPlayerIndex: 1, // This will be updated by applyLogAction
+      turn: 6, // This will be updated by applyLogAction
+    };
+
+    const result = applyLogAction(mockGame, logEntry);
+
+    // Check cache after applying the action
+    expect(result.turnStatisticsCache).toHaveLength(1);
+    const stats: ITurnStatistics = result.turnStatisticsCache[0];
+
+    expect(stats.turn).toBe(5); // Stats are for the turn that just ended
+    expect(stats.playerIndex).toBe(0); // Player whose turn ended
+    // Check player-specific stats (should reflect state *before* NEXT_TURN reset)
+    expect(stats.playerActions[0]).toBe(2);
+    expect(stats.playerActions[1]).toBe(1);
+    expect(stats.playerBuys[0]).toBe(1);
+    expect(stats.playerBuys[1]).toBe(2);
+    expect(stats.playerCoins[0]).toBe(5);
+    expect(stats.playerCoins[1]).toBe(3);
+    expect(stats.playerCardsDrawn[0]).toBe(3);
+    expect(stats.playerCardsDrawn[1]).toBe(5);
+    expect(stats.playerGains[0]).toBe(1);
+    expect(stats.playerGains[1]).toBe(0);
+    expect(stats.playerDiscards[0]).toBe(0);
+    expect(stats.playerDiscards[1]).toBe(2);
+    expect(stats.playerCoffers[0]).toBe(3);
+    expect(stats.playerCoffers[1]).toBe(0);
+    expect(stats.playerVillagers[0]).toBe(1);
+    expect(stats.playerVillagers[1]).toBe(0);
+    expect(stats.playerDebt[0]).toBe(0);
+    expect(stats.playerDebt[1]).toBe(2);
+    expect(stats.playerFavors[0]).toBe(2);
+    expect(stats.playerFavors[1]).toBe(0);
+  });
+
+  it('should add correct turn statistics to cache on END_GAME action', () => {
+    // Setup initial player states before the END_GAME action is applied
+    mockGame.players[0].turn = { actions: 0, buys: 1, coins: 2, cards: 4, gains: 0, discard: 1 };
+    mockGame.players[1].turn = { actions: 3, buys: 1, coins: 7, cards: 2, gains: 2, discard: 0 };
+    mockGame.players[0].mats = { coffers: 1, villagers: 0, debt: 1, favors: 0 };
+    mockGame.players[1].mats = { coffers: 2, villagers: 3, debt: 0, favors: 5 };
+    mockGame.currentTurn = 10;
+    mockGame.currentPlayerIndex = 1; // Player 1's turn ends
+
+    // Add log entries for turns 2 through 10
+    const gameStart = mockGame.log[0].timestamp;
+    let currentTime = gameStart.getTime();
+    let currentGameTime = 0;
+    for (let i = 2; i <= 10; i++) {
+      const prevPlayer = (i + mockGame.players.length - 2) % mockGame.players.length;
+      const currentPlayer = (i + mockGame.players.length - 1) % mockGame.players.length;
+      currentTime += 1000; // Increment time for each turn
+      currentGameTime += 1000;
+      mockGame.log.push(
+        createNextTurnLogEntry(i, prevPlayer, currentPlayer, new Date(currentTime), currentGameTime)
+      );
+    }
+
+    const logEntry: ILogEntry = {
+      action: GameLogAction.END_GAME,
+      playerIndex: NO_PLAYER, // No specific player for END_GAME itself
+      id: 'end-game-id',
+      timestamp: new Date(gameStart.getTime() + 20000), // Ensure time progresses
+      gameTime: 20000,
+      prevPlayerIndex: 1, // Player whose turn ended
+      currentPlayerIndex: 1, // Remains the same for END_GAME
+      turn: 10, // Turn number when game ended
+    };
+
+    const result = applyLogAction(mockGame, logEntry);
+
+    // Check cache after applying the action
+    expect(result.turnStatisticsCache).toHaveLength(1);
+    const stats: ITurnStatistics = result.turnStatisticsCache[0];
+
+    expect(stats.turn).toBe(10); // Stats are for the turn that just ended
+    expect(stats.playerIndex).toBe(1); // Player whose turn ended
+    // Check player-specific stats (should reflect state *before* END_GAME)
+    expect(stats.playerActions[0]).toBe(0);
+    expect(stats.playerActions[1]).toBe(3);
+    expect(stats.playerBuys[0]).toBe(1);
+    expect(stats.playerBuys[1]).toBe(1);
+    expect(stats.playerCoins[0]).toBe(2);
+    expect(stats.playerCoins[1]).toBe(7);
+    expect(stats.playerCardsDrawn[0]).toBe(4);
+    expect(stats.playerCardsDrawn[1]).toBe(2);
+    expect(stats.playerGains[0]).toBe(0);
+    expect(stats.playerGains[1]).toBe(2);
+    expect(stats.playerDiscards[0]).toBe(1);
+    expect(stats.playerDiscards[1]).toBe(0);
+    expect(stats.playerCoffers[0]).toBe(1);
+    expect(stats.playerCoffers[1]).toBe(2);
+    expect(stats.playerVillagers[0]).toBe(0);
+    expect(stats.playerVillagers[1]).toBe(3);
+    expect(stats.playerDebt[0]).toBe(1);
+    expect(stats.playerDebt[1]).toBe(0);
+    expect(stats.playerFavors[0]).toBe(0);
+    expect(stats.playerFavors[1]).toBe(5);
+  });
+
+  // --- End Turn Statistics Cache Tests ---
 });
