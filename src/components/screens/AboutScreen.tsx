@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Link, Paper, List, ListItem, ListItemText } from '@mui/material';
-import DominionTransparentLogo from '@/assets/images/Dominion-tx.png';
+import DominionTransparentLogo from '@/assets/images/DominionAssistant.png';
 import SuperCapsText from '@/components/SuperCapsText';
 import {
   APP_TITLE,
