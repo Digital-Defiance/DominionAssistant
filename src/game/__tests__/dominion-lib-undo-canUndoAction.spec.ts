@@ -372,11 +372,8 @@ describe('canUndoAction', () => {
     expect(result).toBe(false);
     expect(removeTargetAndLinkedActionsSpy).toHaveBeenCalledTimes(1);
     expect(reconstructGameStateSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Error during game state reconstruction:',
-      expect.any(NotEnoughSupplyError)
-    );
+    // console.error should NOT be called for expected errors like NotEnoughSupplyError
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
   it('should return false if undoing a game-wide counter results in negative values', () => {
@@ -407,11 +404,8 @@ describe('canUndoAction', () => {
     expect(result).toBe(false);
     expect(removeTargetAndLinkedActionsSpy).toHaveBeenCalledTimes(1);
     expect(reconstructGameStateSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Error during game state reconstruction:',
-      expect.any(NotEnoughProphecyError)
-    );
+    // console.error should NOT be called for expected errors like NotEnoughProphecyError
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
   it.each(NoUndoActions)('should return false when undoing a no undo action', (action) => {
