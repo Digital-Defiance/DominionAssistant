@@ -27,6 +27,9 @@ import {
   NullSet as ProsperityNullSet,
 } from '@/game/interfaces/set-kingdom/prosperity';
 import { IPlayer } from '@/game/interfaces/player';
+import { IVictoryDetails } from '@/game/interfaces/victory-details';
+import { IMatDetails } from '@/game/interfaces/mat-details';
+import { IPlayerGameTurnDetails } from '@/game/interfaces/player-game-turn-details';
 import {
   PlayerField,
   PlayerFieldMap,
@@ -44,9 +47,48 @@ import { MaxPlayersError } from '@/game/errors/max-players';
 import { NotEnoughSubfieldError } from '@/game/errors/not-enough-subfield';
 import { RankedPlayer } from '@/game/interfaces/ranked-player';
 import { deepClone } from '@/game/utils';
-import { IPlayerGameTurnDetails } from '@/game/interfaces/player-game-turn-details';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 import { InvalidPlayerIndexError } from '@/game/errors/invalid-player-index';
+
+// --- Helper Functions for updatePlayerField ---
+
+function updateVictoryDetail(
+  playerVictory: IVictoryDetails,
+  subfield: keyof IVictoryDetails,
+  increment: number
+): void {
+  const currentVal = playerVictory[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('victory', subfield);
+  }
+  playerVictory[subfield] = Math.max(currentVal + increment, 0);
+}
+
+function updateTurnDetail(
+  playerTurn: IPlayerGameTurnDetails,
+  subfield: keyof IPlayerGameTurnDetails,
+  increment: number
+): void {
+  const currentVal = playerTurn[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('turn', subfield); // Or 'newTurn' depending on context
+  }
+  playerTurn[subfield] = Math.max(currentVal + increment, 0);
+}
+
+function updateMatDetail(
+  playerMats: IMatDetails,
+  subfield: keyof IMatDetails,
+  increment: number
+): void {
+  const currentVal = playerMats[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('mats', subfield);
+  }
+  playerMats[subfield] = Math.max(currentVal + increment, 0);
+}
+
+// --- End Helper Functions ---
 
 /**
  * Calculate the victory points for a player.
@@ -216,7 +258,7 @@ export const NewGameState = (gameStateWithOptions: IGame, gameStart: Date): IGam
  * @param game - The game state
  * @param playerIndex - The index of the player
  * @param field - The field to update
- * @param subfield - The subfield to update
+ * @param subfield - The subfield to update (type guaranteed by T)
  * @param increment - The amount to increment the field by
  * @param victoryTrash - Whether to trash the victory card (does not go back into supply)
  * @returns The updated game state
@@ -235,51 +277,37 @@ export function updatePlayerField<T extends keyof PlayerFieldMap>(
   }
   const player = updatedGame.players[playerIndex];
 
-  // Check if the supply decrement would go below 0 (moved check earlier for clarity)
-  const decrementSupply =
-    field === 'victory' &&
-    ['estates', 'duchies', 'provinces', 'colonies', 'curses'].includes(subfield as string); // Cast needed here
-
-  if (decrementSupply) {
-    const supplyCount = updatedGame.supply[subfield as keyof IGameSupply] as number;
-    if (increment > 0 && supplyCount < increment) {
-      throw new NotEnoughSupplyError(subfield as string); // Cast needed here
-    }
-  }
-
-  // Use if/else if to narrow types
+  // Delegate to helper functions based on field type
   if (field === 'victory') {
-    const currentVal = player.victory[subfield as keyof typeof player.victory] || 0;
-    if (currentVal + increment < 0) {
-      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
+    // Check supply before potentially modifying player state
+    const decrementSupply = ['estates', 'duchies', 'provinces', 'colonies', 'curses'].includes(
+      subfield as string // Cast is okay here for simple check
+    );
+    if (decrementSupply) {
+      const supplyKey = subfield as keyof IGameSupply;
+      const supplyCount = updatedGame.supply[supplyKey] as number;
+      if (increment > 0 && supplyCount < increment) {
+        throw new NotEnoughSupplyError(supplyKey);
+      }
     }
-    player.victory[subfield as keyof typeof player.victory] = Math.max(currentVal + increment, 0);
-    // Update supply (moved logic here for victory field)
+
+    // Call helper
+    updateVictoryDetail(player.victory, subfield as keyof IVictoryDetails, increment);
+
+    // Update supply after successful player update
     if (decrementSupply && !victoryTrash) {
       (updatedGame.supply[subfield as keyof IGameSupply] as number) -= increment;
     }
   } else if (field === 'turn') {
-    const currentVal = player.turn[subfield as keyof typeof player.turn] || 0;
-    if (currentVal + increment < 0) {
-      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
-    }
-    player.turn[subfield as keyof typeof player.turn] = Math.max(currentVal + increment, 0);
+    updateTurnDetail(player.turn, subfield as keyof IPlayerGameTurnDetails, increment);
   } else if (field === 'mats') {
-    const currentVal = player.mats[subfield as keyof typeof player.mats] || 0;
-    if (currentVal + increment < 0) {
-      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
-    }
-    player.mats[subfield as keyof typeof player.mats] = Math.max(currentVal + increment, 0);
+    updateMatDetail(player.mats, subfield as keyof IMatDetails, increment);
   } else if (field === 'newTurn') {
-    const currentVal = player.newTurn[subfield as keyof typeof player.newTurn] || 0;
-    if (currentVal + increment < 0) {
-      throw new NotEnoughSubfieldError(field, subfield); // Removed 'as string'
-    }
-    player.newTurn[subfield as keyof typeof player.newTurn] = Math.max(currentVal + increment, 0);
+    // Assuming newTurn has the same structure as turn for subfields
+    updateTurnDetail(player.newTurn, subfield as keyof IPlayerGameTurnDetails, increment);
   } else {
-    // This should be unreachable due to the generic constraint and earlier check,
-    // but adding it satisfies exhaustive checks and provides an error boundary.
-    throw new InvalidFieldError(field as string);
+    // This path should be unreachable due to the generic constraint
+    throw new InvalidFieldError(`Unhandled field type: ${field as string}`);
   }
 
   return updatedGame;
