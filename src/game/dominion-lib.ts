@@ -50,6 +50,46 @@ import { deepClone } from '@/game/utils';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 import { InvalidPlayerIndexError } from '@/game/errors/invalid-player-index';
 
+// --- Helper Functions for updatePlayerField ---
+
+function updateVictoryDetail(
+  playerVictory: IVictoryDetails,
+  subfield: keyof IVictoryDetails,
+  increment: number
+): void {
+  const currentVal = playerVictory[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('victory', subfield);
+  }
+  playerVictory[subfield] = Math.max(currentVal + increment, 0);
+}
+
+function updateTurnDetail(
+  playerTurn: IPlayerGameTurnDetails,
+  subfield: keyof IPlayerGameTurnDetails,
+  increment: number
+): void {
+  const currentVal = playerTurn[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('turn', subfield); // Or 'newTurn' depending on context
+  }
+  playerTurn[subfield] = Math.max(currentVal + increment, 0);
+}
+
+function updateMatDetail(
+  playerMats: IMatDetails,
+  subfield: keyof IMatDetails,
+  increment: number
+): void {
+  const currentVal = playerMats[subfield] || 0;
+  if (currentVal + increment < 0) {
+    throw new NotEnoughSubfieldError('mats', subfield);
+  }
+  playerMats[subfield] = Math.max(currentVal + increment, 0);
+}
+
+// --- End Helper Functions ---
+
 /**
  * Updates a specific victory subfield for a player by applying the given increment.
  *
@@ -645,7 +685,8 @@ export function getPlayerLabel(players: IPlayer[], playerIndex: number) {
 
     // Check if character is a printable ASCII character
     // This regex matches alphanumeric characters and common printable symbols
-    if (/^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]$/.test(char)) {
+    // eslint-disable-next-line no-useless-escape
+    if (/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]$/.test(char)) {
       return char.toUpperCase();
     }
   }

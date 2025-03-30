@@ -45,7 +45,7 @@ export function deepClone<T>(obj: T): T {
  * @param date - The Date object to validate.
  * @returns True if the Date object is valid; otherwise, false.
  */
-export function isValidDate(date: Date): date is Date {
+export function isValidDate(date: unknown): date is Date {
   return date instanceof Date && !isNaN(date.getTime());
 }
 
@@ -58,6 +58,16 @@ export function isValidDate(date: Date): date is Date {
  * @returns True if the input is a string representing a valid date; otherwise, false.
  */
 export function isValidDateString(dateString: string | number | Date): boolean {
-  const date = new Date(dateString);
-  return typeof dateString === 'string' && !isNaN(date.getTime());
+  if (dateString instanceof Date) {
+    return isValidDate(dateString);
+  }
+  if (typeof dateString === 'number') {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());
+  }
+  if (typeof dateString === 'string') {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());
+  }
+  return false;
 }

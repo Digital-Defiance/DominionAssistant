@@ -75,17 +75,11 @@ describe('isValidDate', () => {
   });
 
   it('should return false for non-Date objects', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(isValidDate('2023-01-01' as any)).toBe(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(isValidDate(1672531199000 as any)).toBe(false); // timestamp
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(isValidDate({} as any)).toBe(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(isValidDate(null as any)).toBe(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(isValidDate(undefined as any)).toBe(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(isValidDate([] as any)).toBe(false);
+    expect(isValidDate('2023-01-01')).toBe(false);
+    expect(isValidDate(1672531199000)).toBe(false); // timestamp
+    expect(isValidDate({})).toBe(false);
+    expect(isValidDate(null)).toBe(false);
+    expect(isValidDate(undefined)).toBe(false);
+    expect(isValidDate([])).toBe(false);
   });
 });
