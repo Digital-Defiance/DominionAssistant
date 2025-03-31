@@ -213,7 +213,14 @@ Join our community of developers.
 
 ## Changelog
 
-### Sat Mar 19 12:05:00 2025
+### Sun Mar 30 17:40:00 2025
+
+- Version 0.15.0
+
+  - Enhanced statistics page
+  - fixed e2e tests
+
+### Sat Mar 29 12:05:00 2025
 
 - Version 0.14.4
 
