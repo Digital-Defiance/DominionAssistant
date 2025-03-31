@@ -31,7 +31,8 @@
     "keytool:list": "keytool -list -v -keystore dominion-assistant.keystore -alias dominion",
     "cap:release:assemble": "cd android && ./gradlew assembleRelease",
     "cap:release:bundle": "cd android && ./gradlew bundleRelease",
-    "keytool:newkey": "keytool -genkey -v -keystore ./android/dominion-assistant.keystore -alias dominion -keyalg RSA -keysize 2048 -validity 10000"
+    "keytool:newkey": "keytool -genkey -v -keystore ./android/dominion-assistant.keystore -alias dominion -keyalg RSA -keysize 2048 -validity 10000",
+    "jre:install": "wget https://download.oracle.com/java/21/archive/jdk-21.0.5_linux-x64_bin.deb && sudo dpkg -i jdk-21.0.5_linux-x64_bin.deb && rm jdk-21.0.5_linux-x64_bin.deb"
   },
   "private": true,
   "dependencies": {
