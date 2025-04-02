@@ -257,7 +257,7 @@ describe('reconstructGameState', () => {
   });
 
   it('should throw an error when encountering negative prophecy counters', () => {
-    const gameWithNegativeAction = {
+    const gameWithNegativeAction: IGame = {
       ...baseGame,
       options: {
         curses: false,
@@ -267,6 +267,7 @@ describe('reconstructGameState', () => {
           favors: false,
         },
         expansions: {
+          alchemy: false,
           risingSun: true,
           renaissance: false,
           prosperity: false,

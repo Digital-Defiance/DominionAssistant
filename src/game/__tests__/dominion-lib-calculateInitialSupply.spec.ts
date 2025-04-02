@@ -13,7 +13,7 @@ import {
 describe('calculateInitialSupply', () => {
   const defaultOptions = (): IGameOptions => ({
     curses: true,
-    expansions: { prosperity: false, renaissance: false, risingSun: false },
+    expansions: { alchemy: false, prosperity: false, renaissance: false, risingSun: false },
     mats: { coffersVillagers: false, debt: false, favors: false },
     trackCardCounts: true,
     trackCardGains: true,

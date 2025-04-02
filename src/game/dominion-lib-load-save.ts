@@ -27,6 +27,7 @@ import { IRenaissanceFeatures } from '@/game/interfaces/set-features/renaissance
 import { IRisingSunFeatures } from '@/game/interfaces/set-features/rising-sun';
 import { ITurnStatisticsRaw } from '@/game/interfaces/turn-statistics-raw';
 import { ITurnStatistics } from '@/game/interfaces/turn-statistics';
+import { IAlchemyFeatures } from './interfaces/set-features/alchemy';
 
 /**
  * Save the game data using the provided storage service.
@@ -151,6 +152,7 @@ export function convertGameRawToGame(gameRaw: IGameRaw): IGame {
       end: convertTimestamp(cache.end),
     })),
     expansions: {
+      alchemy: deepClone<IAlchemyFeatures>(gameRaw.expansions.alchemy),
       renaissance: deepClone<IRenaissanceFeatures>(gameRaw.expansions.renaissance),
       risingSun: deepClone<IRisingSunFeatures>(gameRaw.expansions.risingSun),
     },
@@ -179,6 +181,7 @@ export function convertGameToGameRaw(game: IGame): IGameRaw {
       end: isValidDate(turnStatistics.end) ? turnStatistics.end.toISOString() : turnStatistics.end,
     })),
     expansions: {
+      alchemy: deepClone<IAlchemyFeatures>(game.expansions.alchemy),
       renaissance: deepClone<IRenaissanceFeatures>(game.expansions.renaissance),
       risingSun: deepClone<IRisingSunFeatures>(game.expansions.risingSun),
     },

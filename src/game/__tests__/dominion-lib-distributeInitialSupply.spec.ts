@@ -2,6 +2,7 @@ import { calculateInitialSupply, distributeInitialSupply } from '@/game/dominion
 import { IGame } from '@/game/interfaces/game';
 import { IPlayer } from '@/game/interfaces/player';
 import {
+  DefaultAlchemyFeatures,
   DefaultGameOptions,
   DefaultRenaissanceFeatures,
   DefaultRisingSunFeatures,
@@ -29,6 +30,7 @@ describe('distributeInitialSupply', () => {
       supply: initialSupply,
       options: DefaultGameOptions(),
       expansions: {
+        alchemy: DefaultAlchemyFeatures(),
         renaissance: DefaultRenaissanceFeatures(),
         risingSun: DefaultRisingSunFeatures(),
       },

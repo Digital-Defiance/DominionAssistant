@@ -414,6 +414,16 @@ const Player: FC<PlayerProps> = ({ containerHeight }) => {
                   onIncrement={() => handleFieldChange('turn', 'coins', 1, linkChangeId)}
                   onDecrement={() => handleFieldChange('turn', 'coins', -1, linkChangeId)}
                 />
+                {gameState.options.expansions.alchemy &&
+                  gameState.expansions.alchemy.trackPotions && (
+                    <IncrementDecrementControl
+                      label="Potions"
+                      value={player.turn.potions ?? 0}
+                      tooltip="Tracks the number of potions played this turn"
+                      onIncrement={() => handleFieldChange('turn', 'potions', 1, linkChangeId)}
+                      onDecrement={() => handleFieldChange('turn', 'potions', -1, linkChangeId)}
+                    />
+                  )}
                 {gameState.options.trackCardCounts && (
                   <IncrementDecrementControl
                     label="Cards"

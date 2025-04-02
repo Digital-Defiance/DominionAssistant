@@ -81,6 +81,7 @@ describe('StatisticsScreen', () => {
         playerCardsDrawn: { 0: 5, 1: 5 },
         playerGains: { 0: 0, 1: 0 },
         playerDiscards: { 0: 0, 1: 0 },
+        playerPotions: { 0: 0, 1: 0 },
         playerCoffers: { 0: 0, 1: 0 },
         playerVillagers: { 0: 0, 1: 0 },
         playerDebt: { 0: 0, 1: 0 },
@@ -104,6 +105,7 @@ describe('StatisticsScreen', () => {
         playerVillagers: { 0: 0, 1: 1 },
         playerDebt: { 0: 0, 1: 0 },
         playerFavors: { 0: 0, 1: 0 },
+        playerPotions: { 0: 0, 1: 0 },
         supply: createMockSupply({ silvers: 39 }), // Use helper
         playerIndex: 1,
         start: new Date(),
@@ -142,6 +144,20 @@ describe('StatisticsScreen', () => {
     mockGame.options.trackCardGains = false;
     renderWithMockContext(mockGame);
     expect(screen.queryByLabelText('Gains')).not.toBeInTheDocument();
+  });
+
+  it('renders Potions checkbox only if trackPotions is true', () => {
+    // Updated label
+    mockGame.options.expansions.alchemy = true;
+    mockGame.expansions.alchemy.trackPotions = true;
+    renderWithMockContext(mockGame);
+    expect(screen.getByLabelText('Potions')).toBeInTheDocument(); // Updated label
+
+    cleanup(); // Explicit cleanup before re-render
+    mockGame.options.expansions.alchemy = false;
+    mockGame.expansions.alchemy.trackPotions = false;
+    renderWithMockContext(mockGame);
+    expect(screen.queryByLabelText('Potions')).not.toBeInTheDocument(); // Updated label
   });
 
   it('renders Discards checkbox only if trackDiscard is true', () => {

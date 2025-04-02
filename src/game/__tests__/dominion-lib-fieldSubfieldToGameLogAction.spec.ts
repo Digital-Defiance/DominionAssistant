@@ -44,6 +44,14 @@ describe('victoryFieldToGameLogAction', () => {
     expect(fieldSubfieldToGameLogAction('turn', 'gains', -1)).toBe(GameLogAction.REMOVE_GAINS);
   });
 
+  it('should return ADD_POTIONS for turn potions increment', () => {
+    expect(fieldSubfieldToGameLogAction('turn', 'potions', 1)).toBe(GameLogAction.ADD_POTIONS);
+  });
+
+  it('should return REMOVE_POTIONS for turn potions decrement', () => {
+    expect(fieldSubfieldToGameLogAction('turn', 'potions', -1)).toBe(GameLogAction.REMOVE_POTIONS);
+  });
+
   it('should return ADD_COFFERS for mats coffers increment', () => {
     expect(fieldSubfieldToGameLogAction('mats', 'coffers', 1)).toBe(GameLogAction.ADD_COFFERS);
   });
@@ -207,6 +215,18 @@ describe('victoryFieldToGameLogAction', () => {
   it('should return REMOVE_COINS for newTurn coins decrement', () => {
     expect(fieldSubfieldToGameLogAction('newTurn', 'coins', -1)).toBe(
       GameLogAction.REMOVE_NEXT_TURN_COINS
+    );
+  });
+
+  it('should return ADD_POTIONS for newTurn potions increment', () => {
+    expect(fieldSubfieldToGameLogAction('newTurn', 'potions', 1)).toBe(
+      GameLogAction.ADD_NEXT_TURN_POTIONS
+    );
+  });
+
+  it('should return REMOVE_POTIONS for newTurn potions decrement', () => {
+    expect(fieldSubfieldToGameLogAction('newTurn', 'potions', -1)).toBe(
+      GameLogAction.REMOVE_NEXT_TURN_POTIONS
     );
   });
 

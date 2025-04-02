@@ -14,6 +14,8 @@ describe('getFieldAndSubfieldFromAction', () => {
     [GameLogAction.REMOVE_CARDS, 'turn', 'cards'],
     [GameLogAction.ADD_GAINS, 'turn', 'gains'],
     [GameLogAction.REMOVE_GAINS, 'turn', 'gains'],
+    [GameLogAction.ADD_POTIONS, 'turn', 'potions'],
+    [GameLogAction.REMOVE_POTIONS, 'turn', 'potions'],
     [GameLogAction.ADD_DISCARD, 'turn', 'discard'],
     [GameLogAction.REMOVE_DISCARD, 'turn', 'discard'],
   ])(
@@ -74,6 +76,8 @@ describe('getFieldAndSubfieldFromAction', () => {
     [GameLogAction.REMOVE_NEXT_TURN_BUYS, 'newTurn', 'buys'],
     [GameLogAction.ADD_NEXT_TURN_COINS, 'newTurn', 'coins'],
     [GameLogAction.REMOVE_NEXT_TURN_COINS, 'newTurn', 'coins'],
+    [GameLogAction.ADD_NEXT_TURN_POTIONS, 'newTurn', 'potions'],
+    [GameLogAction.REMOVE_NEXT_TURN_POTIONS, 'newTurn', 'potions'],
     [GameLogAction.ADD_NEXT_TURN_CARDS, 'newTurn', 'cards'],
     [GameLogAction.REMOVE_NEXT_TURN_CARDS, 'newTurn', 'cards'],
   ])(

@@ -2,7 +2,7 @@ import { IGameOptions } from '@/game/interfaces/game-options';
 import { IPlayer } from '@/game/interfaces/player';
 import { IProphecyMat } from './interfaces/set-mats/prophecy';
 
-export type TurnField = 'actions' | 'buys' | 'coins' | 'cards' | 'gains' | 'discard';
+export type TurnField = 'actions' | 'buys' | 'coins' | 'cards' | 'gains' | 'potions' | 'discard';
 export type VictoryField =
   | 'curses'
   | 'estates'

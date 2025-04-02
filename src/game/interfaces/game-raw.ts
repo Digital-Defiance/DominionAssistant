@@ -7,6 +7,7 @@ import { IGameOptions } from '@/game/interfaces/game-options';
 import { CurrentStep } from '@/game/enumerations/current-step';
 import { ITurnStatisticsRaw } from '@/game/interfaces/turn-statistics-raw';
 import { IRecipeAction } from './recipe-action';
+import { IAlchemyFeatures } from './set-features/alchemy';
 
 export interface IGameRaw {
   /**
@@ -25,6 +26,10 @@ export interface IGameRaw {
    * The features from the expansions.
    */
   expansions: {
+    /**
+     * The features from the Alchemy expansion.
+     */
+    alchemy: IAlchemyFeatures;
     /**
      * The features from the Renaissance expansion.
      */

@@ -65,6 +65,8 @@ export function fieldSubfieldToGameLogAction<T extends keyof PlayerFieldMap>(
           return increment > 0 ? GameLogAction.ADD_COINS : GameLogAction.REMOVE_COINS;
         case 'cards':
           return increment > 0 ? GameLogAction.ADD_CARDS : GameLogAction.REMOVE_CARDS;
+        case 'potions':
+          return increment > 0 ? GameLogAction.ADD_POTIONS : GameLogAction.REMOVE_POTIONS;
         case 'gains':
           return increment > 0 ? GameLogAction.ADD_GAINS : GameLogAction.REMOVE_GAINS;
         case 'discard':
@@ -118,6 +120,10 @@ export function fieldSubfieldToGameLogAction<T extends keyof PlayerFieldMap>(
           return increment > 0
             ? GameLogAction.ADD_NEXT_TURN_COINS
             : GameLogAction.REMOVE_NEXT_TURN_COINS;
+        case 'potions':
+          return increment > 0
+            ? GameLogAction.ADD_NEXT_TURN_POTIONS
+            : GameLogAction.REMOVE_NEXT_TURN_POTIONS;
         case 'cards':
           return increment > 0
             ? GameLogAction.ADD_NEXT_TURN_CARDS
@@ -524,6 +530,17 @@ export function addLogEntry(
         },
         {} as { [playerIndex: number]: number }
       ),
+      ...(game.options.expansions.alchemy && game.expansions.alchemy.trackPotions
+        ? {
+            playerPotions: game.players.reduce(
+              (acc, player, index) => {
+                acc[index] = player.turn.potions ?? 0;
+                return acc;
+              },
+              {} as { [playerIndex: number]: number }
+            ),
+          }
+        : {}),
       playerCardsDrawn: game.players.reduce(
         (acc, player, index) => {
           acc[index] = player.turn.cards; // Map to player.turn.cards
@@ -673,6 +690,17 @@ export function applyLogAction(game: IGame, logEntry: ILogEntry): IGame {
         },
         {} as { [idx: number]: number }
       ),
+      ...(game.options.expansions.alchemy && game.expansions.alchemy.trackPotions
+        ? {
+            playerPotions: game.players.reduce(
+              (acc, player, index) => {
+                acc[index] = player.turn.potions ?? 0;
+                return acc;
+              },
+              {} as { [playerIndex: number]: number }
+            ),
+          }
+        : {}),
       playerCardsDrawn: game.players.reduce(
         (acc, player, index) => {
           acc[index] = player.turn.cards;
@@ -863,6 +891,17 @@ export function applyLogAction(game: IGame, logEntry: ILogEntry): IGame {
         },
         {} as { [idx: number]: number }
       ),
+      ...(updatedGame.options.expansions.alchemy && updatedGame.expansions.alchemy.trackPotions
+        ? {
+            playerPotions: updatedGame.players.reduce(
+              (acc, player, index) => {
+                acc[index] = player.turn.potions ?? 0;
+                return acc;
+              },
+              {} as { [playerIndex: number]: number }
+            ),
+          }
+        : {}),
       playerCardsDrawn: updatedGame.players.reduce(
         (acc, player, index) => {
           acc[index] = player.turn.cards; // Map to player.turn.cards
@@ -1564,6 +1603,18 @@ export function rebuildTurnStatisticsCache(game: IGame): Array<ITurnStatistics> 
           },
           {} as { [playerIndex: number]: number }
         ),
+        ...(reconstructedGame.options.expansions.alchemy &&
+        reconstructedGame.expansions.alchemy.trackPotions
+          ? {
+              playerPotions: reconstructedGame.players.reduce(
+                (acc, player, index) => {
+                  acc[index] = player.turn.potions ?? 0;
+                  return acc;
+                },
+                {} as { [playerIndex: number]: number }
+              ),
+            }
+          : {}),
         playerCardsDrawn: reconstructedGame.players.reduce(
           (acc, player, index) => {
             acc[index] = player.turn.cards; // Map to player.turn.cards
@@ -1649,6 +1700,18 @@ export function rebuildTurnStatisticsCache(game: IGame): Array<ITurnStatistics> 
           },
           {} as { [playerIndex: number]: number }
         ),
+        ...(reconstructedGame.options.expansions.alchemy &&
+        reconstructedGame.expansions.alchemy.trackPotions
+          ? {
+              playerPotions: reconstructedGame.players.reduce(
+                (acc, player, index) => {
+                  acc[index] = player.turn.potions ?? 0;
+                  return acc;
+                },
+                {} as { [playerIndex: number]: number }
+              ),
+            }
+          : {}),
         playerCardsDrawn: reconstructedGame.players.reduce(
           (acc, player, index) => {
             acc[index] = player.turn.cards; // Map to player.turn.cards

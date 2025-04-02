@@ -14,15 +14,16 @@ import { IRisingSunFeatures } from '@/game/interfaces/set-features/rising-sun';
 import { IExpansionsEnabled } from '@/game/interfaces/expansions-enabled';
 import { calculateInitialSunTokens } from '@/game/interfaces/set-mats/prophecy';
 import { VictoryField } from './types';
+import { IAlchemyFeatures } from './interfaces/set-features/alchemy';
 
 /**
  * The current game version
  */
-export const VERSION_NUMBER = '0.15.0' as const;
+export const VERSION_NUMBER = '0.15.1' as const;
 /**
  * The lowest version of the game that is compatible with this version of the save game format.
  */
-export const MINIMUM_COMPATIBLE_SAVE_VERSION = '0.15.0' as const;
+export const MINIMUM_COMPATIBLE_SAVE_VERSION = '0.15.1' as const;
 
 export const MIN_PLAYERS = 2 as const;
 export const MAX_PLAYERS = 6 as const;
@@ -68,6 +69,7 @@ export const DEFAULT_TURN_CARDS = 5 as const;
  */
 export function DefaultExpansionsEnabled(): IExpansionsEnabled {
   return deepClone<IExpansionsEnabled>({
+    alchemy: false,
     prosperity: false,
     renaissance: false,
     risingSun: false,
@@ -154,6 +156,16 @@ export function EmptyVictoryDetails(): IVictoryDetails {
     colonies: 0,
     other: 0,
     curses: 0,
+  });
+}
+
+/**
+ * Default values for the alchemy features.
+ * @returns The default alchemy features.
+ */
+export function DefaultAlchemyFeatures(): IAlchemyFeatures {
+  return deepClone<IAlchemyFeatures>({
+    trackPotions: true,
   });
 }
 
@@ -333,6 +345,7 @@ export function EmptyGameState(): IGame {
     options: DefaultGameOptions(),
     currentTurn: 1,
     expansions: {
+      alchemy: DefaultAlchemyFeatures(),
       renaissance: DefaultRenaissanceFeatures(),
       risingSun: DefaultRisingSunFeatures(),
     },
@@ -369,6 +382,8 @@ export const AdjustmentActions: GameLogAction[] = [
   GameLogAction.REMOVE_BUYS,
   GameLogAction.ADD_CARDS,
   GameLogAction.REMOVE_CARDS,
+  GameLogAction.ADD_POTIONS,
+  GameLogAction.REMOVE_POTIONS,
   GameLogAction.ADD_GAINS,
   GameLogAction.REMOVE_GAINS,
   GameLogAction.ADD_DISCARD,
@@ -407,6 +422,8 @@ export const AdjustmentActions: GameLogAction[] = [
   GameLogAction.REMOVE_NEXT_TURN_BUYS,
   GameLogAction.ADD_NEXT_TURN_COINS,
   GameLogAction.REMOVE_NEXT_TURN_COINS,
+  GameLogAction.ADD_NEXT_TURN_POTIONS,
+  GameLogAction.REMOVE_NEXT_TURN_POTIONS,
   GameLogAction.ADD_NEXT_TURN_CARDS,
   GameLogAction.REMOVE_NEXT_TURN_CARDS,
   GameLogAction.ADD_NEXT_TURN_DISCARD,
@@ -422,6 +439,7 @@ export const NegativeAdjustmentActions: GameLogAction[] = [
   GameLogAction.REMOVE_COINS,
   GameLogAction.REMOVE_BUYS,
   GameLogAction.REMOVE_CARDS,
+  GameLogAction.REMOVE_POTIONS,
   GameLogAction.REMOVE_GAINS,
   GameLogAction.REMOVE_DISCARD,
   // mats
@@ -443,6 +461,7 @@ export const NegativeAdjustmentActions: GameLogAction[] = [
   GameLogAction.REMOVE_NEXT_TURN_ACTIONS,
   GameLogAction.REMOVE_NEXT_TURN_BUYS,
   GameLogAction.REMOVE_NEXT_TURN_COINS,
+  GameLogAction.REMOVE_NEXT_TURN_POTIONS,
   GameLogAction.REMOVE_NEXT_TURN_CARDS,
   GameLogAction.REMOVE_NEXT_TURN_DISCARD,
 ] as const;

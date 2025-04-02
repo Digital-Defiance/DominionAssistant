@@ -8,6 +8,7 @@ import {
   DefaultPlayerColors,
   VERSION_NUMBER,
   DefaultRenaissanceFeatures,
+  DefaultAlchemyFeatures,
 } from '@/game/constants';
 import { calculateInitialSupply, distributeInitialSupply } from '@/game/dominion-lib';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
@@ -41,6 +42,7 @@ export function createMockGame(playerCount: number, overrides?: Partial<IGame>):
     supply,
     options,
     expansions: {
+      alchemy: DefaultAlchemyFeatures(),
       renaissance: DefaultRenaissanceFeatures(),
       risingSun: {
         prophecy: {

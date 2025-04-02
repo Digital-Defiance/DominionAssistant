@@ -22,6 +22,10 @@ export interface ITurnStatisticsRaw {
    */
   playerCoins: { [playerIndex: number]: number };
   /**
+   * The amount of potions generated/spent by each player during the turn
+   */
+  playerPotions?: { [playerIndex: number]: number };
+  /**
    * The number of cards drawn by each player during the turn
    */
   playerCardsDrawn: { [playerIndex: number]: number };

@@ -127,6 +127,34 @@ const SetGameOptions: FC<SetGameOptionsProps> = ({ startGame }) => {
         </Box>
       )}
 
+      <OptionItem
+        checked={gameState.options.expansions.alchemy}
+        onChange={(e) => {
+          updateOption('expansions', 'alchemy', e.target.checked);
+        }}
+        title="Alchemy"
+        tooltip="Enable Alchemy"
+      />
+
+      {gameState.options.expansions.alchemy && (
+        <Box>
+          <OptionItem
+            checked={gameState.expansions.alchemy.trackPotions || false}
+            onChange={(e) => {
+              setGameState((prevState: IGame) => {
+                const newGame = deepClone<IGame>(prevState);
+                newGame.expansions.alchemy = {
+                  trackPotions: e.target.checked,
+                };
+                return newGame;
+              });
+            }}
+            title="Track Potions"
+            tooltip="Enable Potions tracking for each player"
+          />
+        </Box>
+      )}
+
       <hr />
       <Typography variant="h6" gutterBottom>
         Features

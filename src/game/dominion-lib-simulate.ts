@@ -5,6 +5,7 @@ import { reconstructGameState } from '@/game/dominion-lib-undo-helpers';
 import { getFieldAndSubfieldFromAction, getNextPlayerIndex } from '@/game/dominion-lib';
 import { IGameSupply } from '@/game/interfaces/game-supply';
 import {
+  DefaultAlchemyFeatures,
   DefaultRenaissanceFeatures,
   DefaultRisingSunFeatures,
   NegativeAdjustmentActions,
@@ -21,7 +22,7 @@ export function generateLargeGame(turns = 50, endGame = true): IGame {
   let game = createMockGame(3, {
     options: {
       curses: true,
-      expansions: { risingSun: true, renaissance: true, prosperity: true },
+      expansions: { alchemy: true, risingSun: true, renaissance: true, prosperity: true },
       mats: {
         coffersVillagers: true,
         debt: true,
@@ -32,6 +33,7 @@ export function generateLargeGame(turns = 50, endGame = true): IGame {
       trackDiscard: true,
     },
     expansions: {
+      alchemy: DefaultAlchemyFeatures(),
       renaissance: DefaultRenaissanceFeatures(),
       risingSun: DefaultRisingSunFeatures(),
     },
@@ -104,6 +106,7 @@ function simulatePlayerTurn(game: IGame, timestamp: Date): IGame {
     GameLogAction.ADD_BUYS,
     GameLogAction.ADD_COINS,
     GameLogAction.ADD_CARDS,
+    GameLogAction.ADD_POTIONS,
     GameLogAction.ADD_GAINS,
     GameLogAction.ADD_DISCARD,
     GameLogAction.ADD_VP_TOKENS,

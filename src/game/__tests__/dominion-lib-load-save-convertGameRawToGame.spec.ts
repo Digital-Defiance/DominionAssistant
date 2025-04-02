@@ -7,7 +7,11 @@ import { convertGameRawToGame } from '@/game/dominion-lib-load-save';
 import { IGame } from '@/game/interfaces/game';
 import { IGameRaw } from '@/game/interfaces/game-raw';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
-import { DefaultRenaissanceFeatures, EnabledRisingSunFeatures } from '@/game/constants';
+import {
+  DefaultAlchemyFeatures,
+  DefaultRenaissanceFeatures,
+  EnabledRisingSunFeatures,
+} from '@/game/constants';
 import { getNextPlayerIndexByIndex } from '../dominion-lib';
 
 const numPlayers = 2;
@@ -45,6 +49,7 @@ const mockGame: IGame = createMockGame(numPlayers, {
     }),
   ],
   expansions: {
+    alchemy: DefaultAlchemyFeatures(),
     renaissance: DefaultRenaissanceFeatures(),
     risingSun: EnabledRisingSunFeatures(2),
   },
@@ -86,6 +91,7 @@ const mockGameRaw: IGameRaw = createMockGameRaw(numPlayers, {
     },
   ],
   expansions: {
+    alchemy: DefaultAlchemyFeatures(),
     renaissance: DefaultRenaissanceFeatures(),
     risingSun: EnabledRisingSunFeatures(2),
   },

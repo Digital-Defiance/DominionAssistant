@@ -7,6 +7,7 @@ import { MinPlayersError } from '@/game/errors/min-players';
 import { MaxPlayersError } from '@/game/errors/max-players';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 import { GameLogAction } from '@/game/enumerations/game-log-action';
+import { IGameOptions } from '../interfaces/game-options';
 
 jest.mock('@/game/interfaces/set-mats/prophecy', () => ({
   calculateInitialSunTokens: jest.fn(() => ({ suns: 5 })),
@@ -61,6 +62,9 @@ describe('NewGameState', () => {
         expansions: { ...EmptyGameState().options.expansions, risingSun: true },
       },
       expansions: {
+        alchemy: {
+          trackPotions: false,
+        },
         renaissance: {
           flagBearer: null,
           flagBearerEnabled: false,
@@ -107,9 +111,9 @@ describe('NewGameState', () => {
   });
 
   it('should preserve custom options', () => {
-    const customOptions = {
+    const customOptions: IGameOptions = {
       curses: false,
-      expansions: { prosperity: true, renaissance: true, risingSun: false },
+      expansions: { alchemy: false, prosperity: true, renaissance: true, risingSun: false },
       mats: { coffersVillagers: true, debt: true, favors: false },
       trackCardCounts: true,
       trackCardGains: true,

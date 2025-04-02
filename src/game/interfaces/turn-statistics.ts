@@ -34,6 +34,10 @@ export interface ITurnStatistics {
    */
   playerDiscards: { [playerIndex: number]: number };
   /**
+   * The amount of potions generated/spent by each player during the turn
+   */
+  playerPotions?: { [playerIndex: number]: number };
+  /**
    * The Coffer count for each player at the end of the turn
    */
   playerCoffers: { [playerIndex: number]: number };

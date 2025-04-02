@@ -381,7 +381,7 @@ describe('canUndoAction', () => {
       options: {
         curses: false,
         mats: { coffersVillagers: false, debt: false, favors: false },
-        expansions: { risingSun: true, renaissance: false, prosperity: false },
+        expansions: { alchemy: false, risingSun: true, renaissance: false, prosperity: false },
         trackCardCounts: true,
         trackCardGains: true,
         trackDiscard: true,

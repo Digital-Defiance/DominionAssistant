@@ -29,6 +29,7 @@ import { useGameContext } from '@/components/GameContext';
 import { IGameOptions } from '@/game/interfaces/game-options'; // Added import
 import { IMatsEnabled } from '@/game/interfaces/mats-enabled'; // Added import
 import { IExpansionsEnabled } from '@/game/interfaces/expansions-enabled'; // Added import
+import { IAlchemyFeatures } from '@/game/interfaces/set-features/alchemy'; // Added import
 import { ChartData } from 'chart.js'; // Added import
 import {
   calculateAverageTurnDuration,
@@ -51,6 +52,7 @@ type PlayerStatKey =
   | 'playerActions'
   | 'playerBuys'
   | 'playerCoins'
+  | 'playerPotions'
   | 'playerGains'
   | 'playerDiscards'
   | 'playerCoffers'
@@ -59,11 +61,12 @@ type PlayerStatKey =
   | 'playerFavors'
   | 'playerCardsDrawn';
 
-// Define a more specific type for the option flags
+// Define a more specific type for the option flags, including nested expansion features
 type OptionFlag =
   | keyof IGameOptions
   | `mats.${keyof IMatsEnabled}`
-  | `expansions.${keyof IExpansionsEnabled}`;
+  | `expansions.${keyof IExpansionsEnabled}` // For top-level expansion flags in options
+  | `expansions.alchemy.${keyof IAlchemyFeatures}`; // For specific Alchemy features
 
 interface StatConfig {
   key: PlayerStatKey;
@@ -75,6 +78,7 @@ const playerStatConfigs: StatConfig[] = [
   { key: 'playerActions', label: 'Actions' },
   { key: 'playerBuys', label: 'Buys' },
   { key: 'playerCoins', label: 'Coins' },
+  { key: 'playerPotions', label: 'Potions', optionFlag: 'expansions.alchemy.trackPotions' },
   { key: 'playerGains', label: 'Gains', optionFlag: 'trackCardGains' },
   { key: 'playerDiscards', label: 'Discards', optionFlag: 'trackDiscard' },
   { key: 'playerCoffers', label: 'Coffers', optionFlag: 'mats.coffersVillagers' },
@@ -102,24 +106,39 @@ export default function StatisticsScreen() {
   const { gameState } = useGameContext();
   const { options, players, turnStatisticsCache, log, currentStep, currentTurn } = gameState;
 
-  // Helper to check if an option flag is enabled
+  // Helper to check if an option flag is enabled, handling nested paths
   const isOptionEnabled = (flag: OptionFlag | undefined): boolean => {
     if (!flag) return true; // No flag means always enabled for the graph toggle
 
     const parts = flag.split('.');
-    if (parts.length === 1) {
-      // Direct property of IGameOptions
-      return !!options[parts[0] as keyof IGameOptions];
-    } else if (parts.length === 2) {
-      const mainKey = parts[0] as 'mats' | 'expansions';
-      const subKey = parts[1];
-      if (mainKey === 'mats') {
-        return !!options.mats[subKey as keyof IMatsEnabled];
-      } else if (mainKey === 'expansions') {
-        return !!options.expansions[subKey as keyof IExpansionsEnabled];
+    try {
+      if (parts.length === 1) {
+        // Direct property of IGameOptions
+        return !!options[parts[0] as keyof IGameOptions];
+      } else if (parts.length === 2) {
+        const mainKey = parts[0] as 'mats' | 'expansions';
+        const subKey = parts[1];
+        if (mainKey === 'mats') {
+          return !!options.mats[subKey as keyof IMatsEnabled];
+        } else if (mainKey === 'expansions') {
+          // Check if the *expansion itself* is enabled in options
+          return !!options.expansions[subKey as keyof IExpansionsEnabled];
+        }
+      } else if (parts.length === 3 && parts[0] === 'expansions') {
+        // Nested expansion feature, e.g., 'expansions.alchemy.trackPotions'
+        const expansionName = parts[1] as keyof typeof gameState.expansions;
+        const featureName = parts[2] as keyof (typeof gameState.expansions)[typeof expansionName];
+        // Check if the expansion *and* the specific feature are enabled
+        return (
+          !!options.expansions[expansionName] && // Expansion must be enabled in options
+          !!gameState.expansions[expansionName]?.[featureName] // Feature must be true in gameState.expansions
+        );
       }
+    } catch (error) {
+      console.error(`Error checking option flag "${flag}":`, error);
+      return false; // Treat errors as disabled
     }
-    return false; // Should not happen with valid OptionFlag type
+    return false; // Default to false if path is not recognized
   };
 
   // State for graph visibility
