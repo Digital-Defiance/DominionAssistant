@@ -213,6 +213,13 @@ Join our community of developers.
 
 ## Changelog
 
+### Tue Apr 02 16:15:00 2025
+
+- Version 0.15.1
+
+  - Support for Alchemy expansion/potions
+  - Statistics for Potions
+
 ### Sun Mar 30 17:40:00 2025
 
 - Version 0.15.0
