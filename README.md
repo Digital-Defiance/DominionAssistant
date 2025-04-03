@@ -213,6 +213,12 @@ Join our community of developers.
 
 ## Changelog
 
+### Wed Apr 03 10:57:00 2025
+
+- Version 0.15.2
+
+  - Fix statistics on game load
+
 ### Tue Apr 02 16:15:00 2025
 
 - Version 0.15.1

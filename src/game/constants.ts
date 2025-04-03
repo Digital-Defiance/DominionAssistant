@@ -19,7 +19,7 @@ import { IAlchemyFeatures } from './interfaces/set-features/alchemy';
 /**
  * The current game version
  */
-export const VERSION_NUMBER = '0.15.1' as const;
+export const VERSION_NUMBER = '0.15.2' as const;
 /**
  * The lowest version of the game that is compatible with this version of the save game format.
  */
