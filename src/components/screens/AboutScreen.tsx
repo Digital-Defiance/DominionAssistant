@@ -4,7 +4,7 @@ import DominionTransparentLogo from '@/assets/images/DominionAssistant.png';
 import SuperCapsText from '@/components/SuperCapsText';
 import {
   APP_TITLE,
-  APP_TAGLINE,
+  APP_SHORT_DESCRIPTION,
   APP_MINI_DISCLAIMER,
   APP_MINI_DISCLAIMER_NOTE,
   APP_FEATURES,
@@ -89,7 +89,7 @@ export default function AboutScreen() {
                 {APP_TITLE}
               </Typography>
               <Typography variant="body1" component="p" align="center">
-                {APP_TAGLINE}
+                {APP_SHORT_DESCRIPTION}
               </Typography>
             </Paper>
           </Box>

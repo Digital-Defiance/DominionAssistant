@@ -535,7 +535,8 @@ export const DefaultPlayerColors = [
 ] as const;
 
 export const APP_TITLE = 'Unofficial Dominion Assistant' as const;
-export const APP_TAGLINE =
+export const APP_TAGLINE = 'Build Your Empire, Track Your Triumph' as const;
+export const APP_SHORT_DESCRIPTION =
   'This React application enhances your Dominion gameplay experience with comprehensive features for game management, scoring, and player interaction.' as const;
 export const APP_FEATURES = [
   'Player Management: Add, remove, and track multiple players',
