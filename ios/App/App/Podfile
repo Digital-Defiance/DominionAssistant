@@ -22,34 +22,40 @@ end
 post_install do |installer|
   assertDeploymentTarget(installer)
 
-  # --- Capacitor/Node Setup ---
-  puts "Running custom post_install script for Capacitor/Node setup..."
-  # Navigate to the root of the project relative to the Podfile location
+  # --- Node Dependency Setup ---
+  puts "Running custom post_install script for Node dependency setup..."
   repo_root = File.expand_path('../../../', __dir__)
   puts "Changing directory to repository root: #{repo_root}"
 
-  # Execute commands from the repository root
   Dir.chdir(repo_root) do
+    # Check for Node and Yarn
+    system("command -v node >/dev/null 2>&1") or raise "Node command not found in PATH"
+    system("command -v yarn >/dev/null 2>&1") or raise "Yarn command not found in PATH"
+    puts "Node and Yarn found."
+
     # Setup Font Awesome (ensure FONTAWESOME_KEY is set in CI environment)
+    # This needs to happen before yarn install if it affects .npmrc used by yarn
     puts "Setting up Font Awesome..."
     system("./fontawesome-npmrc.sh") or raise "Font Awesome setup script failed"
 
     # Install Node dependencies
     puts "Installing Node dependencies (yarn install --immutable)..."
+    # Explicitly add common Node/Yarn paths just in case
+    node_path = `command -v node`.strip
+    yarn_path = `command -v yarn`.strip
+    node_dir = File.dirname(node_path) unless node_path.empty?
+    yarn_dir = File.dirname(yarn_path) unless yarn_path.empty?
+    original_path = ENV['PATH']
+    ENV['PATH'] = "#{node_dir}:#{yarn_dir}:#{original_path}" unless node_dir.nil? || yarn_dir.nil?
+
+    puts "Using PATH: #{ENV['PATH']}"
     system("yarn install --immutable") or raise "Yarn install failed"
+    puts "Yarn install completed."
 
-    # Build the web app for Capacitor
-    puts "Building web assets (NODE_ENV=production nx build --configuration=capacitor)..."
-    system("NODE_ENV=production nx build --configuration=capacitor") or raise "Web build failed"
-
-    # Copy Capacitor web assets
-    puts "Copying Capacitor web assets (npx cap copy ios)..."
-    system("npx cap copy ios") or raise "Capacitor copy failed"
-
-    # Note: The rest of the Capacitor sync (plugin updates, pod install)
-    # should be handled implicitly by the main build process after this hook.
+    # Restore original PATH if modified
+    ENV['PATH'] = original_path
   end
 
-  puts "Custom post_install script (Node setup & Capacitor copy) finished."
-  # --- End Capacitor/Node Setup ---
+  puts "Custom post_install script (Node dependency setup) finished."
+  # --- End Node Dependency Setup ---
 end
