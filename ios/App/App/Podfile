@@ -1,0 +1,55 @@
+require_relative '../../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+platform :ios, '14.0'
+use_frameworks!
+
+# workaround to avoid Xcode caching of Pods that requires
+# Product -> Clean Build Folder after new Cordova plugins installed
+# Requires CocoaPods 1.6 or newer
+install! 'cocoapods', :disable_input_output_paths => true
+
+def capacitor_pods
+  pod 'Capacitor', :path => '../../../node_modules/@capacitor/ios'
+  pod 'CapacitorCordova', :path => '../../../node_modules/@capacitor/ios'
+
+end
+
+target 'App' do
+  capacitor_pods
+  # Add your Pods here
+end
+
+post_install do |installer|
+  assertDeploymentTarget(installer)
+
+  # --- Capacitor/Node Setup ---
+  puts "Running custom post_install script for Capacitor/Node setup..."
+  # Navigate to the root of the project relative to the Podfile location
+  repo_root = File.expand_path('../../../', __dir__)
+  puts "Changing directory to repository root: #{repo_root}"
+
+  # Execute commands from the repository root
+  Dir.chdir(repo_root) do
+    # Setup Font Awesome (ensure FONTAWESOME_KEY is set in CI environment)
+    puts "Setting up Font Awesome..."
+    system("./fontawesome-npmrc.sh") or raise "Font Awesome setup script failed"
+
+    # Install Node dependencies
+    puts "Installing Node dependencies (yarn install --immutable)..."
+    system("yarn install --immutable") or raise "Yarn install failed"
+
+    # Build the web app for Capacitor
+    puts "Building web assets (NODE_ENV=production nx build --configuration=capacitor)..."
+    system("NODE_ENV=production nx build --configuration=capacitor") or raise "Web build failed"
+
+    # Copy Capacitor web assets
+    puts "Copying Capacitor web assets (npx cap copy ios)..."
+    system("npx cap copy ios") or raise "Capacitor copy failed"
+
+    # Note: The rest of the Capacitor sync (plugin updates, pod install)
+    # should be handled implicitly by the main build process after this hook.
+  end
+
+  puts "Custom post_install script (Node setup & Capacitor copy) finished."
+  # --- End Capacitor/Node Setup ---
+end

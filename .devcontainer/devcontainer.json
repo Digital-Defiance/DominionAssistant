@@ -31,7 +31,7 @@
     "DOTENV_CONFIG_PATH": "/workspaces/dominion-assistant/.env"
   },
   "mounts": [
-    "source=${localWorkspaceFolder}/.env,target=/workspaces/dominion-assistant/.env,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder}/.env,target=/workspaces/dominion-assistant/.env,type=bind"
   ],
 
   // Features to add to the dev container. More info: https://containers.dev/features.

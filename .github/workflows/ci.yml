@@ -38,7 +38,7 @@ jobs:
         env:
           FONTAWESOME_KEY: ${{ secrets.FONTAWESOME_KEY }}
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
       - uses: nrwl/nx-set-shas@v4
 
       # Run lint, test, build, and e2e tasks explicitly

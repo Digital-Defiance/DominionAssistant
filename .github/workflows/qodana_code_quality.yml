@@ -35,7 +35,7 @@ jobs:
           FONTAWESOME_KEY: ${{ secrets.FONTAWESOME_KEY }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2024.2

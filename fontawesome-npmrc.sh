@@ -1,5 +1,12 @@
 #!/bin/bash
 source .env
+
+# Ensure FONTAWESOME_KEY is set in the environment
+if [ -z "$FONTAWESOME_KEY" ]; then
+  echo "Error: FONTAWESOME_KEY environment variable is not set."
+  exit 1
+fi
+
 echo "@fortawesome:registry=https://npm.fontawesome.com/
 @awesome.me:registry=https://npm.fontawesome.com/
 //npm.fontawesome.com/:_authToken=$FONTAWESOME_KEY" > .npmrc
@@ -11,10 +18,9 @@ npmScopes:
   fortawesome:
     npmAlwaysAuth: true
     npmRegistryServer: "https://npm.fontawesome.com/"
-    npmAuthToken: "{FONTAWESOME_KEY}"
+    npmAuthToken: "$FONTAWESOME_KEY"
   awesome.me:
     npmAlwaysAuth: true
     npmRegistryServer: "https://npm.fontawesome.com/"
-    npmAuthToken: "{FONTAWESOME_KEY}"
+    npmAuthToken: "$FONTAWESOME_KEY"
 EOF
-sed -i "s/{FONTAWESOME_KEY}/$FONTAWESOME_KEY/g" .yarnrc.yml

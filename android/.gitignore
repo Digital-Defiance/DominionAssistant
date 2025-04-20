@@ -1,7 +1,5 @@
 # Using Android gitignore template: https://github.com/github/gitignore/blob/HEAD/Android.gitignore
 
-*.keystore
-
 # Built application files
 *.apk
 *.aar

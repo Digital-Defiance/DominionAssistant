@@ -5,7 +5,6 @@
   "sourceRoot": "./src",
   "projectType": "application",
   "tags": [],
-  "// targets": "to see all targets run: nx show project dominion-assistant --web",
   "targets": {
     "build-create-large-game": {
       "executor": "nx:run-commands",
@@ -53,16 +52,15 @@
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/dominion-assistant",
-	"webpackConfig": "webpack.config.js"
-        // other build options
+        "webpackConfig": "webpack.config.js"
       },
       "configurations": {
-        "production": {
-          // production options
-        },
+        "production": {},
         "capacitor": {
           "outputPath": "dist/capacitor-app",
-          "webpackConfig": "capacitor-webpack.config.js"
+          "webpackConfig": "capacitor-webpack.config.js",
+          "optimization": true,
+          "outputHashing": "all"
         }
       }
     }

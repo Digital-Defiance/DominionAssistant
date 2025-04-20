@@ -53,4 +53,15 @@ export default [
     // Override or add rules here
     rules: {},
   },
+  {
+    // Override for CommonJS config files
+    files: ['capacitor-webpack.config.js', 'jest.config.ts', 'webpack.config.js'], // Add other CJS config files if needed
+    languageOptions: {
+      sourceType: 'commonjs',
+    },
+    rules: {
+      // Allow require in these files if needed, though sourceType: 'commonjs' should handle it
+      // '@typescript-eslint/no-var-requires': 'off',
+    },
+  },
 ];

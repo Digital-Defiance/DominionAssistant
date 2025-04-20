@@ -1,6 +1,7 @@
 // capacitor-webpack.config.js - Used for capacitor builds
 const { composePlugins, withNx } = require('@nx/webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin'); // Restore this
 
 // Nx plugins for webpack.
 module.exports = composePlugins(withNx(), (config) => {
@@ -9,28 +10,30 @@ module.exports = composePlugins(withNx(), (config) => {
   // Fix the output path format for compatibility with capacitor
   if (config.output) {
     // Force output.path to use forward slashes for capacitor compatibility
-    const path = require('path');
     config.output.path = path.resolve(__dirname, 'dist/capacitor-app');
 
     // Make sure publicPath is set correctly
     config.output.publicPath = '';
   }
 
-  // Check if HtmlWebpackPlugin is already configured
-  const hasHtmlPlugin = config.plugins.some(
-    (plugin) => plugin.constructor.name === 'HtmlWebpackPlugin'
+  // Explicitly configure HtmlWebpackPlugin for Capacitor build
+  // Remove existing HtmlWebpackPlugin instance if NxAppWebpackPlugin added one
+  config.plugins = config.plugins.filter(
+    (plugin) => plugin.constructor.name !== 'HtmlWebpackPlugin'
   );
-
-  // Add HtmlWebpackPlugin if not already present
-  if (!hasHtmlPlugin) {
-    config.plugins.push(
-      new HtmlWebpackPlugin({
-        template: './src/index.html',
-        filename: 'index.html',
-      })
-    );
-  }
+  // Add our own instance
+  config.plugins.push(
+    new HtmlWebpackPlugin({
+      template: './src/index.html', // Ensure this path is correct
+      filename: 'index.html',
+      // Ensure chunks are injected. 'all' includes vendor, main, runtime, etc.
+      chunks: 'all',
+      // Necessary for Capacitor: prevents base href injection if NxAppWebpackPlugin tries it
+      baseHref: '/',
+      // Ensure script loading is standard, not deferred or async unless intended
+      scriptLoading: 'blocking',
+    })
+  );
 
   return config;
 });
-
