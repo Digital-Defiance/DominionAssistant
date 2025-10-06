@@ -18,6 +18,8 @@ Please see our GitHub [issues](https://github.com/Digital-Defiance/DominionAssis
 
 See also: [**Unofficial Star Realms Assistant**](https://github.com/Digital-Defiance/StarRealmsAssistant) which is based on the same code. Live on [StarRealmsAssistant.com](https://StarRealmsAssistant.com)
 
+Created by [Jessica Mulein](https://github.com/JessicaMulein) of [Mulein Studios](https://muleinstudios.com) in conjunction with [Digital Defiance](https://digitaldefiance.org). All rights reserved.
+
 ## Disclaimer for End Users
 
 This software runs entirely in the browser and should not affect the local machine, but game state may not be accurately tracked and may affect the outcome of games. This tool should not (yet?) be relied upon for tournaments or anything where it is not being used for personal use. The project is provided "as-is" without any warranties or guarantees. Use at your own risk. The authors are not responsible for any damage or data loss that may occur from using this software.
@@ -212,6 +214,12 @@ Join our community of developers.
 - [Digital Defiance](https://digitaldefiance.org): 501c3 Non Profit Open Source Engineering Guild, with our own Discord.
 
 ## Changelog
+
+### Tue Aug 06 11:24:00 2025
+
+- Version 0.15.3
+
+  - Update about to include Mulein Studios
 
 ### Wed Apr 03 10:57:00 2025
 

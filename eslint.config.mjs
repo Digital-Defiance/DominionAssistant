@@ -3,7 +3,7 @@ import typescriptParser from '@typescript-eslint/parser';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import prettier from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
+import prettierConfig from 'eslint-config-prettier/build/index.js';
 import nx from '@nx/eslint-plugin';
 
 export default [
@@ -40,7 +40,7 @@ export default [
       ...typescript.configs['recommended'].rules,
       ...reactPlugin.configs['recommended'].rules,
       ...reactHooksPlugin.configs['recommended'].rules,
-      ...prettierConfig.rules, // Ensure Prettier rules are included
+      ...prettierConfig.rules
     },
     settings: {
       react: {
