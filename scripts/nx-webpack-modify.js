@@ -15,7 +15,7 @@ const findNxConfig = () => {
     if (fs.existsSync(nxJsonPath)) {
       return {
         workspaceRoot: currentDir,
-        nxJsonPath
+        nxJsonPath,
       };
     }
     currentDir = path.dirname(currentDir);
@@ -30,28 +30,28 @@ const findWebpackConfig = (workspaceRoot) => {
   if (fs.existsSync(webpackConfigPath)) {
     return {
       type: 'webpack',
-      path: webpackConfigPath
+      path: webpackConfigPath,
     };
   }
-  
+
   // Check for workspace.json
   const workspaceJsonPath = path.join(workspaceRoot, 'workspace.json');
   if (fs.existsSync(workspaceJsonPath)) {
     return {
       type: 'workspace',
-      path: workspaceJsonPath
+      path: workspaceJsonPath,
     };
   }
-  
+
   // Check for angular.json (used in some Nx workspaces)
   const angularJsonPath = path.join(workspaceRoot, 'angular.json');
   if (fs.existsSync(angularJsonPath)) {
     return {
       type: 'angular',
-      path: angularJsonPath
+      path: angularJsonPath,
     };
   }
-  
+
   return null;
 };
 
@@ -65,17 +65,17 @@ const { composePlugins, withNx } = require('@nx/webpack');
 module.exports = composePlugins(withNx(), (config) => {
   // Update the webpack config as needed here.
   // e.g. config.plugins.push(new MyPlugin())
-  
+
   // Fix the output path format for compatibility with capacitor
   if (config.output) {
     // Force output.path to use forward slashes for capacitor compatibility
     const path = require('path');
     config.output.path = path.resolve(__dirname, 'dist/capacitor-app');
-    
+
     // Make sure publicPath is set correctly
     config.output.publicPath = '';
   }
-  
+
   return config;
 });
 `;
@@ -102,7 +102,7 @@ const findProjectConfig = () => {
       path: projectJsonPath
     };
   }
-  
+
   // Check for workspace.json
   const workspaceJsonPath = path.join(__dirname, '..', 'workspace.json');
   if (fs.existsSync(workspaceJsonPath)) {
@@ -111,28 +111,28 @@ const findProjectConfig = () => {
       path: workspaceJsonPath
     };
   }
-  
+
   return null;
 };
 
 const projectConfig = findProjectConfig();
 if (projectConfig) {
   console.log(\`Found project configuration at \${projectConfig.path}\`);
-  
+
   const config = JSON.parse(fs.readFileSync(projectConfig.path, 'utf8'));
-  
+
   // Update the build configuration
   if (config.projects && config.projects['${appName}']) {
     const projectConfig = config.projects['${appName}'];
-    
+
     if (projectConfig.architect && projectConfig.architect.build) {
       const buildConfig = projectConfig.architect.build;
-      
+
       // Update output path
       if (buildConfig.options) {
         buildConfig.options.outputPath = 'dist/capacitor-app';
       }
-      
+
       // Add capacitor-specific configuration
       if (!buildConfig.configurations.capacitor) {
         buildConfig.configurations.capacitor = {
@@ -140,19 +140,19 @@ if (projectConfig) {
           outputPath: 'dist/capacitor-app'
         };
       }
-      
+
       fs.writeFileSync(projectConfig.path, JSON.stringify(config, null, 2));
       console.log('Updated project configuration for Capacitor');
     }
   } else if (config.targets && config.targets.build) {
     // Project.json format
     const buildConfig = config.targets.build;
-    
+
     // Update output path
     if (buildConfig.options) {
       buildConfig.options.outputPath = 'dist/capacitor-app';
     }
-    
+
     // Add capacitor-specific configuration
     if (!buildConfig.configurations.capacitor) {
       buildConfig.configurations.capacitor = {
@@ -160,7 +160,7 @@ if (projectConfig) {
         outputPath: 'dist/capacitor-app'
       };
     }
-    
+
     fs.writeFileSync(projectConfig.path, JSON.stringify(config, null, 2));
     console.log('Updated project configuration for Capacitor');
   }
@@ -183,17 +183,18 @@ const updatePackageJson = (workspaceRoot) => {
   const packageJsonPath = path.join(workspaceRoot, 'package.json');
   if (fs.existsSync(packageJsonPath)) {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    
+
     // Add capacitor scripts
     packageJson.scripts = packageJson.scripts || {};
     packageJson.scripts['cap:nx-build'] = 'node scripts/nx-compatible-capacitor.js';
     packageJson.scripts['cap:build'] = 'nx build --configuration=capacitor && npx cap sync';
-    packageJson.scripts['cap:init'] = 'npx cap init DominionAssistant com.dominionassistant.app';
+    packageJson.scripts['cap:init'] =
+      'npx cap init DominionAssistant com.digitaldefiance.dominionassistant';
     packageJson.scripts['cap:add:android'] = 'npx cap add android';
     packageJson.scripts['cap:add:ios'] = 'npx cap add ios';
     packageJson.scripts['cap:open:android'] = 'npx cap open android';
     packageJson.scripts['cap:open:ios'] = 'npx cap open ios';
-    
+
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
     console.log(`Updated ${packageJsonPath} with Capacitor scripts`);
   }
@@ -206,29 +207,31 @@ const main = () => {
     console.error('Could not find Nx workspace configuration.');
     return;
   }
-  
+
   console.log(`Found Nx workspace at ${nxConfig.workspaceRoot}`);
-  
+
   const webpackConfig = findWebpackConfig(nxConfig.workspaceRoot);
   if (webpackConfig) {
     console.log(`Found configuration at ${webpackConfig.path}`);
   } else {
     console.log('Could not find existing webpack config, creating one...');
   }
-  
+
   // Create capacitor-webpack.config.js
   const capacitorWebpackConfig = createCapacitorWebpackConfig(nxConfig.workspaceRoot);
-  
+
   // Create Nx project configuration updater
   const appName = 'dominion-assistant'; // Use your actual app name
   createNxProjectScript(nxConfig.workspaceRoot, appName);
-  
+
   // Update package.json
   updatePackageJson(nxConfig.workspaceRoot);
-  
+
   console.log('\nNx workspace ready for Capacitor integration!');
   console.log('Next steps:');
-  console.log('1. Run: node scripts/update-nx-config.js (if you have project.json or workspace.json)');
+  console.log(
+    '1. Run: node scripts/update-nx-config.js (if you have project.json or workspace.json)'
+  );
   console.log('2. Run: yarn cap:nx-build');
   console.log('3. Run: npx cap open android');
 };
