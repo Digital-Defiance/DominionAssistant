@@ -34,30 +34,6 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-      <service
-        android:name=".BleForegroundService"
-        android:foregroundServiceType="connectedDevice"
-        android:exported="false" />
-
     </application>
-
-    <!-- Permissions -->
-
-    <uses-permission android:name="android.permission.INTERNET" />
-  <!-- Required for Bluetooth operations -->
-  <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-  <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-  <!-- Required for Bluetooth scanning on devices running Android 10 or higher -->
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
-
-  <!-- Add the Bluetooth feature to indicate that Bluetooth is used by the app -->
-  <uses-feature
-    android:name="android.hardware.bluetooth_le"
-    android:required="true" />
 
 </manifest>

@@ -74,7 +74,7 @@ const configContent = `
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.dominionassistant.app',
+  appId: 'com.digitaldefiance.dominionassistant',
   appName: 'DominionAssistant',
   webDir: 'dist/capacitor-app',
   bundledWebRuntime: false,

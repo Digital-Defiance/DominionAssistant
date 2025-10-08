@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.dominionassistant.app',
+  appId: 'com.digitaldefiance.dominionassistant',
   appName: 'Unofficial Dominion Assistant', // Use correct display name
   webDir: 'dist/dominion-assistant', // Point to the actual Nx build output
   // bundledWebRuntime: false, // Removed invalid property
