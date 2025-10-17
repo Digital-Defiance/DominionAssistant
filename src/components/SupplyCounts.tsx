@@ -12,28 +12,42 @@ const Container = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   maxWidth: 600,
   margin: '0 auto',
-  overflowY: 'auto', // Make it scrollable
+  overflowY: 'auto',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    maxWidth: '100%',
+  },
 }));
 
 const Header = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const StyledListItem = styled(ListItem)({
+const StyledListItem = styled(ListItem)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   paddingTop: 8,
   paddingBottom: 8,
-});
+  [theme.breakpoints.down('sm')]: {
+    paddingTop: 4,
+    paddingBottom: 4,
+  },
+}));
 
-const CardName = styled(Typography)({
+const CardName = styled(Typography)(({ theme }) => ({
   fontFamily: 'Minion Pro Medium Cond Subhead',
-});
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '0.875rem',
+  },
+}));
 
-const Quantity = styled(Typography)({
+const Quantity = styled(Typography)(({ theme }) => ({
   fontFamily: 'TrajanProBold',
   fontWeight: 'bold',
-});
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '0.875rem',
+  },
+}));
 
 const Note = styled(Typography)(({ theme }) => ({
   fontSize: 14,

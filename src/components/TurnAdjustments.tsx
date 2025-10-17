@@ -36,11 +36,14 @@ const Header = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const Quantity = styled(Typography)({
+const Quantity = styled(Typography)(({ theme }) => ({
   fontFamily: 'TrajanProBold',
   fontWeight: 'bold',
   fontSize: '1.5rem',
-});
+  [theme.breakpoints.down('sm')]: {
+    fontSize: '1rem',
+  },
+}));
 
 const ScrollableContainer = styled(Box)({
   overflowY: 'auto',
@@ -83,9 +86,13 @@ const TurnAdjustmentsSummary: FC<TurnAdjustmentProps> = ({ turn, containerHeight
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Field</TableCell>
-                    <TableCell sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Subfield</TableCell>
-                    <TableCell align="right" sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                    <TableCell sx={{ fontSize: { xs: '0.875rem', sm: '1.2rem' }, fontWeight: 'bold' }}>
+                      Field
+                    </TableCell>
+                    <TableCell sx={{ fontSize: { xs: '0.875rem', sm: '1.2rem' }, fontWeight: 'bold' }}>
+                      Subfield
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontSize: { xs: '0.875rem', sm: '1.2rem' }, fontWeight: 'bold' }}>
                       Increment
                     </TableCell>
                   </TableRow>
@@ -102,10 +109,10 @@ const TurnAdjustmentsSummary: FC<TurnAdjustmentProps> = ({ turn, containerHeight
 
                     return (
                       <TableRow key={index}>
-                        <TableCell sx={{ fontSize: '1.2rem' }}>
+                        <TableCell sx={{ fontSize: { xs: '0.875rem', sm: '1.2rem' } }}>
                           <FieldName className="typography-title">{fieldName}</FieldName>
                         </TableCell>
-                        <TableCell sx={{ fontSize: '1.2rem' }}>
+                        <TableCell sx={{ fontSize: { xs: '0.875rem', sm: '1.2rem' } }}>
                           <FieldName className="typography-title">{subfieldName}</FieldName>
                         </TableCell>
                         <TableCell

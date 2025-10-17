@@ -218,6 +218,11 @@ Join our community of developers.
 
 ## Changelog
 
+### Thu Oct 16 2025 16:30:00 GMT-0700 (Pacific Daylight Time)
+
+- Version 0.15.5
+  - Updates to UI to be more responsive on mobile devices
+
 ### Wed Oct 08 12:29:00 2025
 
 - Version 0.15.4

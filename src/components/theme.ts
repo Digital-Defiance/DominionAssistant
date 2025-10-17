@@ -15,6 +15,15 @@ const theme: Theme = createTheme({
   typography: {
     h6: {
       fontSize: '1.25rem',
+      '@media (max-width:600px)': {
+        fontSize: '1rem',
+      },
+    },
+    body1: {
+      fontSize: '1rem',
+      '@media (max-width:600px)': {
+        fontSize: '0.875rem',
+      },
     },
   },
   breakpoints: {
@@ -24,6 +33,28 @@ const theme: Theme = createTheme({
       md: 960,
       lg: 1280,
       xl: 1920,
+    },
+  },
+  components: {
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '@media (max-width:600px)': {
+            minWidth: 44,
+            minHeight: 44,
+          },
+        },
+      },
+    },
+    MuiFab: {
+      styleOverrides: {
+        root: {
+          '@media (max-width:600px)': {
+            width: 48,
+            height: 48,
+          },
+        },
+      },
     },
   },
 });

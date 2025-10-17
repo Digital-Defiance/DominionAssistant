@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-06T22:54:15.319278Z">
+        <DropdownSelection timestamp="2025-10-17T00:04:08.016103Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\jessi\.android\avd\Samsung_Galaxy_Tab_S11_Ultra.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\jessi\.android\avd\Pixel_9_Pro_XL.avd" />
             </handle>
           </Target>
         </DropdownSelection>

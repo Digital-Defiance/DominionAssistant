@@ -61,7 +61,10 @@ const IncrementDecrementControl: FC<IncrementDecrementControlProps> = ({
   ...otherProps
 }) => {
   const labelContent = (
-    <StyledTypography variant="body1" sx={{ marginRight: 1 }}>
+    <StyledTypography
+      variant="body1"
+      sx={{ marginRight: { xs: 0.25, sm: 1 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}
+    >
       {label}:
     </StyledTypography>
   );
@@ -86,22 +89,49 @@ const IncrementDecrementControl: FC<IncrementDecrementControlProps> = ({
       )}
       {onTrash && (
         <Tooltip title="Trash this card and remove it from the supply">
-          <IconButton onClick={onTrash} size="small">
-            <DeleteIcon fontSize="small" />
+          <IconButton
+            onClick={onTrash}
+            size="small"
+            sx={{
+              minWidth: { xs: 40, sm: 'auto' },
+              minHeight: { xs: 40, sm: 'auto' },
+              padding: { xs: '4px', sm: '8px' },
+            }}
+          >
+            <DeleteIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />
           </IconButton>
         </Tooltip>
       )}
       <Tooltip title="Decrease quantity">
-        <IconButton onClick={onDecrement} size="small">
-          <RemoveIcon fontSize="small" />
+        <IconButton
+          onClick={onDecrement}
+          size="small"
+          sx={{
+            minWidth: { xs: 40, sm: 'auto' },
+            minHeight: { xs: 40, sm: 'auto' },
+            padding: { xs: '4px', sm: '8px' },
+          }}
+        >
+          <RemoveIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />
         </IconButton>
       </Tooltip>
-      <StyledLargeNumber variant="body1" sx={{ minWidth: 20, textAlign: 'center' }}>
+      <StyledLargeNumber
+        variant="body1"
+        sx={{ minWidth: { xs: 24, sm: 20 }, textAlign: 'center', fontSize: { xs: '0.9rem', sm: '1.2rem' } }}
+      >
         {value}
       </StyledLargeNumber>
       <Tooltip title="Increase quantity">
-        <IconButton onClick={onIncrement} size="small">
-          <AddIcon fontSize="small" />
+        <IconButton
+          onClick={onIncrement}
+          size="small"
+          sx={{
+            minWidth: { xs: 40, sm: 'auto' },
+            minHeight: { xs: 40, sm: 'auto' },
+            padding: { xs: '4px', sm: '8px' },
+          }}
+        >
+          <AddIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />
         </IconButton>
       </Tooltip>
     </Box>

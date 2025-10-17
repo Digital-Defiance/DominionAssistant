@@ -23,9 +23,12 @@ import { PlayerChip } from './PlayerChip';
 import { ILogEntry } from '@/game/interfaces/log-entry';
 
 const OuterContainer = styled(Box)(({ theme }) => ({
-  paddingBottom: theme.spacing(8), // Ensure enough space at the bottom
-  position: 'relative', // Ensure absolute positioning works within this container
-  overflowY: 'auto', // Make it scrollable
+  paddingBottom: theme.spacing(8),
+  position: 'relative',
+  overflowY: 'auto',
+  [theme.breakpoints.down('sm')]: {
+    paddingBottom: theme.spacing(2),
+  },
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -33,21 +36,33 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   margin: theme.spacing(2),
   position: 'relative',
   transition: 'box-shadow 0.3s ease-in-out',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(0.5),
+    margin: theme.spacing(0.5),
+  },
 }));
 
-const ColumnBox = styled(Box)({
+const ColumnBox = styled(Box)(({ theme }) => ({
   flex: 1,
   minWidth: 200,
   marginBottom: 2,
   display: 'flex',
   flexDirection: 'column',
-});
+  [theme.breakpoints.down('sm')]: {
+    minWidth: '100%',
+    width: '100%',
+    marginBottom: theme.spacing(1),
+  },
+}));
 
-const CenteredTitle = styled(Box)({
+const CenteredTitle = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   marginBottom: 2,
-});
+  [theme.breakpoints.down('sm')]: {
+    marginBottom: 1,
+  },
+}));
 
 interface PlayerProps {
   containerHeight: number;
@@ -58,14 +73,20 @@ const PlayerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
   width: '100%',
   marginBottom: theme.spacing(1),
+  [theme.breakpoints.down('sm')]: {
+    marginBottom: theme.spacing(0.5),
+  },
 }));
 
-const HeaderLeftSection = styled('div')({
+const HeaderLeftSection = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
   flex: 1,
-});
+  [theme.breakpoints.down('sm')]: {
+    gap: '4px',
+  },
+}));
 
 const HeaderRightSection = styled('div')({
   display: 'flex',
@@ -73,13 +94,17 @@ const HeaderRightSection = styled('div')({
   gap: '8px',
 });
 
-const CheckboxesContainer = styled('div')({
+const CheckboxesContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
   marginLeft: 'auto',
   marginRight: '8px',
-});
+  [theme.breakpoints.down('sm')]: {
+    gap: '2px',
+    marginRight: '4px',
+  },
+}));
 
 const Player: FC<PlayerProps> = ({ containerHeight }) => {
   const { gameState, setGameState } = useGameContext();
@@ -365,7 +390,7 @@ const Player: FC<PlayerProps> = ({ containerHeight }) => {
             </HeaderRightSection>
           </PlayerHeader>
           {player && (
-            <Box display="flex" flexWrap="wrap">
+            <Box display="flex" flexWrap="wrap" sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
               <ColumnBox>
                 <CenteredTitle>
                   <Tooltip title="These values reset every turn">

@@ -34,21 +34,23 @@ const Scoreboard: FC = () => {
   }
 
   return (
-    <Paper elevation={3} sx={{ padding: 0, maxWidth: 600 }}>
+    <Paper elevation={3} sx={{ padding: 0, maxWidth: { xs: '100%', sm: 600 }, width: '100%' }}>
       <TableContainer className="scoreboard">
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell align="center">
-                <TableText className={`typography-text`}>Badge</TableText>
+              <TableCell align="center" sx={{ padding: { xs: '8px 4px', sm: '16px' } }}>
+                <TableText className={`typography-text`} sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
+                  Badge
+                </TableText>
               </TableCell>
-              <TableCell>
-                <TableText className={`typography-text`} align="left">
+              <TableCell sx={{ padding: { xs: '8px 4px', sm: '16px' } }}>
+                <TableText className={`typography-text`} align="left" sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
                   Player
                 </TableText>
               </TableCell>
-              <TableCell>
-                <TableText className={`typography-text`} align="center">
+              <TableCell sx={{ padding: { xs: '8px 4px', sm: '16px' } }}>
+                <TableText className={`typography-text`} align="center" sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
                   Score
                 </TableText>
               </TableCell>
@@ -64,7 +66,7 @@ const Scoreboard: FC = () => {
                   '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
                 }}
               >
-                <TableCell align="center">
+                <TableCell align="center" sx={{ padding: { xs: '4px', sm: '8px' } }}>
                   <Tooltip
                     title={
                       index === gameState.currentPlayerIndex
@@ -85,11 +87,13 @@ const Scoreboard: FC = () => {
                     />
                   </Tooltip>
                 </TableCell>
-                <TableCell component="th" scope="row" align="left">
-                  <SuperCapsText className={`typography-text`}>{player.name}</SuperCapsText>
+                <TableCell component="th" scope="row" align="left" sx={{ padding: { xs: '4px', sm: '8px' } }}>
+                  <SuperCapsText className={`typography-text`} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                    {player.name}
+                  </SuperCapsText>
                 </TableCell>
-                <TableCell align="center">
-                  <TableScore className={`typography-title`}>
+                <TableCell align="center" sx={{ padding: { xs: '4px', sm: '8px' } }}>
+                  <TableScore className={`typography-title`} sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}>
                     {calculateVictoryPoints(player)}
                   </TableScore>
                 </TableCell>

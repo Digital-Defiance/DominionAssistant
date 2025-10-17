@@ -12,6 +12,8 @@ import {
   Tab,
   Tabs,
   Tooltip,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Pause as PauseIcon,
@@ -62,6 +64,9 @@ const Container = styled(Box)(({ theme }) => ({
   minHeight: '70vh',
   marginTop: 0,
   paddingTop: 0,
+  [theme.breakpoints.down('sm')]: {
+    padding: 0,
+  },
 }));
 
 const FabContainer = styled(Box)(({ theme }) => ({
@@ -71,10 +76,18 @@ const FabContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   gap: theme.spacing(2),
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    bottom: theme.spacing(8),
+    right: theme.spacing(1),
+    gap: theme.spacing(1),
+  },
 }));
 
 const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastAction }) => {
   const { gameState, setGameState } = useGameContext();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [canUndo, setCanUndo] = useState(false);
   const [confirmEndGameDialogOpen, setConfirmEndGameDialogOpen] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -221,24 +234,33 @@ const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastActi
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          padding: 1,
+          padding: { xs: 0.5, sm: 1, md: 2 },
           overflow: 'auto',
           maxWidth: '100%',
-          paddingBottom: '70px', // fab icons height
+          paddingBottom: { xs: '80px', sm: '70px' },
         }}
       >
         <PlayerBar />
-        <Tabs value={tabValue} onChange={handleTabChange} sx={{ mt: 2 }}>
-          <Tab label="Player" />
-          <Tab label="Scoreboard" />
-          <Tab label="Adjustments" />
-          <Tab label="Supply" />
-          <Tab label="Common Actions" />
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          variant={isMobile ? 'scrollable' : 'standard'}
+          scrollButtons={isMobile ? 'auto' : false}
+          sx={{ mt: { xs: 1, sm: 2 }, minHeight: { xs: 40, sm: 48 } }}
+        >
+          <Tab label={isMobile ? 'Player' : 'Player'} sx={{ minWidth: { xs: 60, sm: 90 } }} />
+          <Tab label={isMobile ? 'Score' : 'Scoreboard'} sx={{ minWidth: { xs: 60, sm: 90 } }} />
+          <Tab label={isMobile ? 'Adjust' : 'Adjustments'} sx={{ minWidth: { xs: 60, sm: 90 } }} />
+          <Tab label={isMobile ? 'Supply' : 'Supply'} sx={{ minWidth: { xs: 60, sm: 90 } }} />
+          <Tab
+            label={isMobile ? 'Actions' : 'Common Actions'}
+            sx={{ minWidth: { xs: 60, sm: 90 } }}
+          />
         </Tabs>
         <ForwardRefBox
           ref={viewBoxRef}
           sx={{
-            p: 2,
+            p: { xs: 0.5, sm: 2 },
             flex: 1,
             overflow: 'hidden',
             maxWidth: '100%',
@@ -267,8 +289,9 @@ const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastActi
             aria-label="next-turn"
             onClick={nextTurn}
             disabled={!lastActionIsNotPause}
+            size={isMobile ? 'small' : 'medium'}
           >
-            <NextTurnIcon />
+            <NextTurnIcon fontSize={isMobile ? 'small' : 'medium'} />
           </Fab>
         </Tooltip>
         <Tooltip title="Undo the most recent update">
@@ -277,8 +300,9 @@ const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastActi
             aria-label="undo"
             onClick={undoLastAction}
             disabled={!canUndo && !lastActionIsNotPause}
+            size={isMobile ? 'small' : 'medium'}
           >
-            <UndoIcon />
+            <UndoIcon fontSize={isMobile ? 'small' : 'medium'} />
           </Fab>
         </Tooltip>
         <Tooltip title={lastActionIsNotPause ? 'Pause the game' : 'Unpause the game'}>
@@ -286,8 +310,13 @@ const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastActi
             color="primary"
             aria-label={lastActionIsNotPause ? 'pause' : 'unpause'}
             onClick={handlePauseUnpause}
+            size={isMobile ? 'small' : 'medium'}
           >
-            {lastActionIsNotPause ? <PauseIcon /> : <PlayIcon />}
+            {lastActionIsNotPause ? (
+              <PauseIcon fontSize={isMobile ? 'small' : 'medium'} />
+            ) : (
+              <PlayIcon fontSize={isMobile ? 'small' : 'medium'} />
+            )}
           </Fab>
         </Tooltip>
         <Tooltip title="End Game">
@@ -296,15 +325,16 @@ const GameInterface: FC<GameInterfaceProps> = ({ nextTurn, endGame, undoLastActi
             aria-label="end-game"
             onClick={handleOpenConfirmEndGameDialog}
             disabled={!lastActionIsNotPause}
+            size={isMobile ? 'small' : 'medium'}
           >
-            <EndGameIcon />
+            <EndGameIcon fontSize={isMobile ? 'small' : 'medium'} />
           </Fab>
         </Tooltip>
       </FabContainer>
-      {gameState.currentStep === CurrentStep.Game && window.innerWidth > 1300 && (
+      {gameState.currentStep === CurrentStep.Game && (
         <>
           <GameClock />
-          <FloatingCounter />
+          {!isMobile && <FloatingCounter />}
         </>
       )}
       <Dialog open={confirmEndGameDialogOpen} onClose={handleCloseConfirmEndGameDialog}>

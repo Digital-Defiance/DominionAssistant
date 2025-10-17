@@ -50,7 +50,7 @@ export const PlayerBar: FC = () => {
         top: 0,
         zIndex: 100,
         width: '100%',
-        padding: '8px',
+        padding: { xs: '4px', sm: '8px' },
         display: 'flex',
         justifyContent: 'center',
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -62,7 +62,17 @@ export const PlayerBar: FC = () => {
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'center',
-          gap: 3,
+          gap: { xs: 1, sm: 2, md: 3 },
+          overflowX: 'auto',
+          width: '100%',
+          maxWidth: '100%',
+          '&::-webkit-scrollbar': {
+            height: 4,
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            borderRadius: 2,
+          },
         }}
       >
         {gameState.players.map((player, index) => (
@@ -74,8 +84,9 @@ export const PlayerBar: FC = () => {
               alignItems: 'center',
               cursor: isGamePaused() ? 'not-allowed' : 'pointer',
               opacity: isGamePaused() ? 0.7 : 1,
-              padding: '4px 8px',
+              padding: { xs: '2px 4px', sm: '4px 8px' },
               borderRadius: '4px',
+              minWidth: { xs: 60, sm: 'auto' },
               backgroundColor:
                 index === gameState.selectedPlayerIndex ? 'rgba(0, 0, 0, 0.08)' : 'transparent',
               '&:hover': {
@@ -101,7 +112,9 @@ export const PlayerBar: FC = () => {
                 }}
               />
             </Tooltip>
-            <ScoreText mt={1}>{calculateVictoryPoints(player)}</ScoreText>
+            <ScoreText mt={1} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              {calculateVictoryPoints(player)}
+            </ScoreText>
           </Box>
         ))}
       </Box>
