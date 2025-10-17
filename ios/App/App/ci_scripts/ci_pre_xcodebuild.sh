@@ -1,7 +1,9 @@
 #!/bin/sh
-set -e
+set -ex
 
 echo "--- Starting ci_pre_xcodebuild.sh ---"
+echo "Environment:"
+env | sort
 
 cd "$CI_PRIMARY_REPOSITORY_PATH"
 
@@ -38,5 +40,11 @@ npx cap sync ios
 echo "Installing CocoaPods..."
 cd ios/App/App
 pod install
+
+# Fix permissions on pod scripts
+chmod +x Pods/Target\ Support\ Files/Pods-App/*.sh 2>/dev/null || true
+
+echo "Verifying public folder..."
+ls -la App/public/ || echo "WARNING: public folder missing or empty"
 
 echo "--- Complete ---"
