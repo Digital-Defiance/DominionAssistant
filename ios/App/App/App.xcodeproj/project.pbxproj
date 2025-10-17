@@ -101,9 +101,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
 			buildPhases = (
-				4C9586F92DB581F2002D08A9 /* ShellScript */,
 				6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */,
-				4C9586FA2DB58507002D08A9 /* ShellScript */,
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
@@ -172,40 +170,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4C9586F92DB581F2002D08A9 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Exit immediately if a command exits with a non-zero status.\nset -e\necho \"--- Running Run Script Build Phase: Capacitor Sync ---\"\nif [ -n \"$CI_PRIMARY_REPOSITORY_PATH\" ]; then\n  echo \"Xcode Cloud detected. Changing to repository root: $CI_PRIMARY_REPOSITORY_PATH\"\n  cd \"$CI_PRIMARY_REPOSITORY_PATH\"\nelse\n  echo \"Not in Xcode Cloud or CI_PRIMARY_REPOSITORY_PATH not set. Assuming relative path from project dir.\"\n  cd ../../../\nfi\necho \"Current directory: $(pwd)\"\nif [ ! -f \"package.json\" ]; then\n  echo \"Error: package.json not found in $(pwd)\"\n  exit 1\nfi\necho \"Syncing Capacitor iOS project (npx cap sync ios --deployment)...\"\nexport PATH=$PATH:./node_modules/.bin:/usr/local/bin\nnpx cap sync ios --deployment\necho \"--- Finished Run Script Build Phase: Capacitor Sync ---\"\n";
-		};
-		4C9586FA2DB58507002D08A9 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Exit immediately if a command exits with a non-zero status.\nset -e\necho \"--- Running Build Phase: Capacitor Sync ---\"\nif [ -n \"$CI_PRIMARY_REPOSITORY_PATH\" ]; then\n  REPO_ROOT=\"$CI_PRIMARY_REPOSITORY_PATH\"\n  echo \"Xcode Cloud detected. Repository Root: $REPO_ROOT\"\nelse\n  REPO_ROOT=\"$PWD/../../../\"\n  echo \"Local build detected. Calculated Repository Root: $REPO_ROOT\"\nfi\ncd \"$REPO_ROOT\"\necho \"Current directory: $(pwd)\"\nif [ ! -f \"package.json\" ]; then\n  echo \"Error: package.json not found in $(pwd)\"\n  exit 1\nfi\nexport PATH=\"$PWD/node_modules/.bin:/usr/local/bin:$PATH\"\necho \"Using PATH: $PATH\"\ncommand -v npx >/dev/null 2>&1 || { echo >&2 \"npx command not found. Aborting.\"; exit 1; }\necho \"Syncing Capacitor iOS project (npx cap sync ios --deployment)...\"\nnpx cap sync ios --deployment\necho \"--- Finished Build Phase: Capacitor Sync ---\"\n";
-		};
 		6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

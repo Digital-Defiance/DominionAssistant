@@ -22,6 +22,12 @@ end
 post_install do |installer|
   assertDeploymentTarget(installer)
 
+  # Skip Node setup in CI - already handled by ci_pre_xcodebuild.sh
+  if ENV['CI'] == 'TRUE'
+    puts "Skipping Node dependency setup in CI environment"
+    next
+  end
+
   # --- Node Dependency Setup ---
   puts "Running custom post_install script for Node dependency setup..."
   repo_root = File.expand_path('../../../', __dir__)
